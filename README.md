@@ -24,8 +24,9 @@
 
 #### 开启服务
 
-* 配置Watero Center所连接的MySQL数据库信息
+* 配置Watero Center所连接的MySQL数据库信息
 * 配置Watero Center启动的主机地址和端口号
+
 
 ```
 python manage.py
