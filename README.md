@@ -8,10 +8,9 @@
 ## 系统架构
 
 * 使用Flask实现RESTful API接口
-* 使用Socket实现RFC 6455 WebSocket协议
+* 使用Socket实现RFC 6455 WebSocket协议
 
 ## 如何使用
-
 ### 环境配置
 
 * Python 3.4
