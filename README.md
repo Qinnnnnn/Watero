@@ -1,7 +1,32 @@
-# Watero DataCenter
+# Watero Center
 
 ### 介绍
 
-Watero DataCenter项目采用Python Flask框架构建，对外提供RESTful接口。旨在接受部署于服务器的Watero Agent回传的日志信息，并持久化于Data Warehouse提供流式计算和离线计算以及数据可视化支持
+* Watero Center是一项数据接收投递转发服务
+* [Watero Go](https://github.com/Qinnnnnn/Watero_Go) 是Watero Center项目部署于节点的Agent服务, 用于采集节点的日志信息上传到Watero Center
 
 ### 系统架构
+
+### 如何使用
+
+#### 环境配置
+
+* Python 3.4
+* MySQL 5.7
+
+#### 依赖配置
+
+* flask
+* falsk-restful
+* flask-sqlalchemy
+* pymysql
+
+
+#### 开启服务
+
+* 配置Watero Center所连接的MySQL数据库信息
+* 配置Watero Center启动的主机地址和端口号
+
+```
+python manage.py
+```

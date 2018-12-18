@@ -50,7 +50,7 @@ class Register(Resource):
         'status': fields.Integer,
         'state': fields.String,
         'message': fields.Nested(
-            {'mac_addr': fields.String}
+            {'access_token': fields.String}
         )
     }
 
