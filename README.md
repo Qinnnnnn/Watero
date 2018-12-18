@@ -11,7 +11,7 @@
 * 使用Socket实现RFC 6455 WebSocket协议
 
 ## 如何使用
-### 环境配置
+### 环境配置
 
 * Python 3.4
 * MySQL 5.7
@@ -23,7 +23,7 @@
 * flask-sqlalchemy
 * pymysql
 
-### 开启服务
+### 开启服务
 
 * 配置Watero Center所连接的MySQL数据库信息
 * 配置Watero Center启动的主机地址和端口号
