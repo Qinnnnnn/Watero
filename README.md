@@ -2,8 +2,8 @@
 
 ## 介绍
 
-* Watero Center是一项数据接收投递转发服务
-* [Watero Go](https://github.com/Qinnnnnn/Watero_Go) 是Watero Center项目部署于节点的Agent服务, 用于采集节点的日志信息上传到Watero Center
+* Watero Center是一项数据接收转发投递服务
+* [Watero Go](https://github.com/Qinnnnnn/Watero_Go)是部署于节点的数据采集服务, 用于采集节点日志上报Watero Center
 
 ## 系统架构
 
