@@ -7,7 +7,7 @@
 
 ## 系统架构
 
-![avatar](http://baidu.com/pic/doge.png)
+![avatar](https://github.com/Qinnnnnn/Watero_Center/blob/master/Watero_Center系统架构.jpg)
 * 基于Flask实现HTTP RESTful API接口, 作为数据通道
 * 基于Socket实现RFC 6455 WebSocket协议, 作为控制通道
 
