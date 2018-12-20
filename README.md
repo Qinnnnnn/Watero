@@ -7,8 +7,9 @@
 
 ## 系统架构
 
-* 使用Flask实现RESTful API接口
-* 使用Socket实现RFC 6455 WebSocket协议
+![avatar](http://baidu.com/pic/doge.png)
+* 基于Flask实现HTTP RESTful API接口, 作为数据通道
+* 基于Socket实现RFC 6455 WebSocket协议, 作为控制通道
 
 ## 如何使用
 
@@ -27,8 +28,4 @@
 ### 开启服务
 
 * 配置Watero Center所连接的MySQL数据库信息
-* 配置Watero Center启动的主机地址和端口号
-
-```Python
-python manage.py
-```
+* 配置HTTP RESTful API服务和WebSocket服务绑定的主机地址和端口号
