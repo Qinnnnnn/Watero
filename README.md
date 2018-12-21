@@ -4,7 +4,7 @@
 [![](https://img.shields.io/github/license/Qinnnnnn/Watero_Center.svg)](https://github.com/Qinnnnnn/Watero_Center/blob/master/LICENSE)
 ![](https://img.shields.io/badge/python-3.7-blue.svg)
 * Watero Center是一项数据接收、转发和投递集成服务
-* [Watero Go](https://github.com/Qinnnnnn/Watero_Go)是Watero Center的Agent服务，用于采集节点数据上报Watero Center和接收Watero Center推送的控制信息
+* [Watero Go](https://github.com/Qinnnnnn/Watero_Go)是Watero Center部署于服务器的Agent服务，用于采集节点数据并上报Watero Center，同时接收Watero Center推送的控制信息
 
 ## 系统架构
 
