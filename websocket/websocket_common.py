@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-File : websocket_util.py
+File : websocket_common.py
 Author : Zerui Qin
 CreateDate : 2018-12-12 10:00:00
 LastModifiedDate : 2018-12-12 10:00:00
@@ -29,7 +29,6 @@ WebSocket协议数据帧格式
 
 import base64
 import hashlib
-import json
 import struct
 
 import six
@@ -42,107 +41,63 @@ class WebSocketHandshakeUtil:
     WebSocket协议握手工具类
     """
 
-    @staticmethod
-    def generate_token(sec_websocket_key, magic_value='258EAFA5-E914-47DA-95CA-C5AB0DC85B11'):
+    def __init__(self, index, conn_map):
+        """
+        初始化
+        :param index: int/str - Socket索引号
+        :param conn_map: dictproxy - WebSocket Client连接映射表
+        """
+        self.index = index
+        self.conn_map = conn_map
+
+        self.header_dict = dict()
+
+    def _generate_token(self, magic_value='258EAFA5-E914-47DA-95CA-C5AB0DC85B11'):
         """
         计算握手信息中的Sec-Websocket-Accept字段
-        :param sec_websocket_key: WebSocket Client发来的Sec-WebSocket-Key字段
-        :param magic_value: RFC 6455规定的GUID
+        :param magic_value: RFC 6455文档规定的GUID
         :return: bytes - sec_websocket_accept值
         """
+        sec_websocket_key = self.header_dict.get('Sec-WebSocket-Key')  # 获取Sec-WebSocket-Key字段
         websocket_key = hashlib.sha1((sec_websocket_key + magic_value).encode(encoding='utf-8')).digest()
         sec_websocket_accept = base64.b64encode(websocket_key)
         return sec_websocket_accept.decode('utf-8')
 
-    @staticmethod
-    def parse_handshake_request(msg):
+    def parse_handshake_request(self, msg):
         """
         解析WebSocket握手请求
         :param msg: str - WebSocket握手请求
         :return: dict - 握手请求头部映射字典
         """
-        header_dict = dict()
         if msg.find('\r\n\r\n') == -1:  # 不存在\r\n\r\n分割符号
-            return None
+            log_debug.logger.error('WebSocket {0} 握手请求解析失败'.format(self.index))
+            return 1
         else:
             header, payload_data = msg.split('\r\n\r\n', 1)  # 按照\r\n\r\n分割1次, 结果为: header, payload data
             for item in header.split('\r\n')[1:]:  # 丢弃HTTP请求header域第一行数据
                 key, value = item.split(': ', 1)  # 逐行解析Request Header信息
-                header_dict[key] = value  # 解析结果存入header_dict
-            if header_dict.get('Sec-WebSocket-Key') is None:  # 不存在Sec-WebSocket-Key
-                return None
+                self.header_dict[key] = value  # 解析结果存入header_dict
+            if self.header_dict.get('Sec-WebSocket-Key') is None:  # 不存在Sec-WebSocket-Key
+                log_debug.logger.error('WebSocket {0} 握手请求解析失败'.format(self.index))
+                return 2
             else:  # 存在Sec-WebSocket-Key
-                return header_dict
+                log_debug.logger.info('WebSocket {0} 握手请求解析成功'.format(self.index))
+                return 0
 
-    @staticmethod
-    def respond_handshake_request(header_dict, index, conn_map):
+    def respond_handshake_request(self):
         """
         响应WebSocket握手请求
-        :param header_dict: dict - WebSocket握手请求头部字典
-        :param index: int - 当前socket连接的标识
-        :param conn_map: dict - WebSocket连接映射表
         :return:
         """
-        sec_websocket_accept = WebSocketHandshakeUtil.generate_token(header_dict['Sec-WebSocket-Key'])
+        sec_websocket_accept = self._generate_token()
         response = 'HTTP/1.1 101 Switching Protocols\r\n' \
                    'Connection: Upgrade\r\n' \
                    'Upgrade: websocket\r\n' \
                    'Sec-WebSocket-Accept: ' + sec_websocket_accept + '\r\n\r\n'
-        while True:
-            conn = conn_map.get(index)
-            if conn:
-                break
+        wpu = WebSocketProtocolUtil(self.index, self.conn_map)
+        conn = wpu.conn()
         conn.send(response.encode('utf-8'))
-
-
-class WebSocketIdentifyUtil:
-    """
-    WebSocket协议身份认证工具类
-    """
-
-    @staticmethod
-    def parse_identity(msg):
-        """
-        解析WebSocket Client身份认证信息
-        :param msg: str - 待确认的WebSocket Client身份认证信息
-        :return: 通过认证则返回mac_addr, 未通过认证则返回None
-        """
-        try:
-            msg_dict = json.loads(msg)
-            mac_addr = msg_dict.get('mac_addr')
-            if mac_addr and len(msg_dict.keys()) == 1:
-                return mac_addr
-            else:
-                return None
-        except json.JSONDecodeError as exp:
-            return None
-
-    @staticmethod
-    def respond_identity(index, conn_map, update):
-        """
-        回复WebSocket Client是否成功更新WebSocket连接映射
-        :param index: int - 当前socket连接的标识
-        :param conn_map: dict - WebSocket连接映射表
-        :param update
-        :return:
-        """
-        if update:
-            identity_msg = {
-                "status": 1,
-                "state": "success",
-                "message": {
-                    "info": "Identify successfully"
-                }
-            }
-        else:
-            identity_msg = {
-                "status": 0,
-                "state": "error",
-                "message": {
-                    "info": "Identify incorrectly"
-                }
-            }
-        WebSocketProtocolUtil.send_frame(str(identity_msg), index, conn_map)
+        log_debug.logger.info('WebSocket {0} 握手请求响应成功'.format(self.index))
 
 
 class WebSocketProtocolUtil:
@@ -150,56 +105,57 @@ class WebSocketProtocolUtil:
     WebSocket协议数据交互工具类
     """
 
-    @staticmethod
-    def get_socket_fd(index, conn_map):
+    def __init__(self, index, conn_map):
         """
-        由 socket 标识和 WebSocket 连接映射表获取 socket fd
-        :param index: int/str - 当前socket连接的标识
-        :param conn_map: dictproxy - WebSocket连接映射表
+        初始化
+        :param index: int/str - Socket索引号
+        :param conn_map: dictproxy - WebSocket Client连接映射表
+        """
+        self.index = index
+        self.conn_map = conn_map
+        self.conn = self._get_socket_fd()
+
+    def _get_socket_fd(self):
+        """
+        通过socket标识和WebSocket连接映射表获取socket fd
         :return:
         """
         i = 0
-        while True:  # 由于 DictProxy 对象获取 key 对应的 value 可能为 None, 故采用死循环获取 socket fd
-            conn = conn_map.get(index)
+        while True:  # 由于DictProxy对象获取key对应的value可能为None，故采用循环获取socket fd
+            conn = self.conn_map.get(self.index)
             if conn or i >= 10:
-                return conn
+                break
             else:
                 i += 1
+        return conn
 
-    @staticmethod
-    def recv_frame(index, conn_map):
+    def recv_buffer(self):
         """
-        因TCP/IP协议栈下层可能导致数据分片, 多次调用socket.recv()函数接收WebSocket数据帧
-        :param index: int/str - 当前socket连接的标识
-        :param conn_map: dictproxy - WebSocket连接映射表
+        因TCP/IP协议栈下层协议可能导致数据分片，多次调用socket.recv函数确保接收完整WebSocket数据帧
         :return: bytes - 接收到的数据帧
         """
         recv_buffer = b''
-        conn = WebSocketProtocolUtil.get_socket_fd(index, conn_map)
         while True:
-            recv_buffer += conn.recv(1024)  # 每次接收1024字节数据
-            res_tuple = WebSocketProtocolUtil.bytify_buffer(buffer=recv_buffer)  # 解析数据帧字节序列
-            if len(recv_buffer) == 0:  # WebSocket Client异常退出导致recv_buffer帧长度为零
-                WebSocketProtocolUtil.remove_conn(index, conn_map)
-                log_debug.logger.info('WebSocket {0} Client异常关闭'.format(index))
+            recv_buffer += self.conn.recv(1024)  # 每次接收1024字节数据
+            if len(recv_buffer) == 0:  # WebSocket Client异常退出导致recv_buffer长度为零
+                log_debug.logger.info('WebSocket {0} 异常关闭'.format(self.index))
                 return None
-            elif res_tuple[1] == 0:  # recv_buffer帧长度不为零且FIN字段为0
-                # TODO 解析WebSocket分片的数据帧
-                pass
-            elif res_tuple[1] == 1:  # recv_buffer帧长度不为零且FIN字段为1
-                frame_payload_length, frame_header_length = WebSocketProtocolUtil.calc_frame_length(recv_buffer)
-                recv_buffer_length = len(recv_buffer)  # 计算接收到的字节序列长度
-                if recv_buffer_length < frame_payload_length + frame_header_length:  # 数据未完成接收
-                    continue
-                return recv_buffer
+            else:  # WebSocket Server正确接收到数据帧
+                res_tuple = WebSocketProtocolUtil.bytify_buffer(buffer=recv_buffer)  # 解析数据帧字节序列
+                if res_tuple[1] == 0:  # recv_buffer帧长度不为零且FIN字段为0
+                    # TODO 解析WebSocket分片的数据帧
+                    pass
+                elif res_tuple[1] == 1:  # recv_buffer帧长度不为零且FIN字段为1
+                    frame_payload_length, frame_header_length = WebSocketProtocolUtil.calc_frame_length(recv_buffer)
+                    recv_buffer_length = len(recv_buffer)  # 计算接收到的字节序列长度
+                    if recv_buffer_length < frame_payload_length + frame_header_length:  # 数据未完成接收
+                        continue
+                    return recv_buffer
 
-    @staticmethod
-    def send_frame(msg, index, conn_map, frame_frrro=b'\x81'):
+    def send_frame(self, msg, frame_frrro=b'\x81'):
         """
         向WebSocket Client发送消息
         :param msg: str - 待发送消息
-        :param index: int/str - Socket索引号
-        :param conn_map: dictproxy - WebSocket Client连接映射表
         :param frame_frrro: byte - 数据帧的第1个字节表示FIN RSV1 RSV2 RSV3 opcode
         :return:
         """
@@ -216,24 +172,52 @@ class WebSocketProtocolUtil:
             # TODO 支持消息分片发送
             log_debug.logger.error('消息过长')
         message = frame_frrro + msg.encode('utf-8')
-        conn = WebSocketProtocolUtil.get_socket_fd(index, conn_map)
+        conn = self.conn
         conn.send(message)
 
-    @staticmethod
-    def heartbeat(index, conn_map):
+    def respond_control_frame(self, frame_tuple):
         """
-        发送WebSocket心跳包并等待回应, 阈值为5s
-        :param index: int/str - 当前socket连接的标识
-        :param conn_map: dict - WebSocket连接映射表
+        响应WebSocket Client控制帧
+        :param frame_tuple: tuple -  来自WebSocket Client数据帧解析后的数据
+        :return: int - opcode字段
+        """
+        opcode = frame_tuple[5]
+        if opcode == 8:  # opcode等于0x08为收到关闭控制帧
+            self.send_frame('', b'\x88')  # 响应CLOSE控制帧
+            self.remove_conn()  # 连接映射表中删除socket连接
+            return opcode
+        elif opcode == 9:  # opcode等于0x09为收到PING心跳包控制帧
+            self.send_frame('', b'\x8A')  # 响应PING心跳控制帧
+            return opcode
+        elif opcode == 10:  # opcode等于0x0A为收到PONG心跳包控制帧
+            return opcode
+        else:  # opcode为其他情况不做响应
+            return 0
+
+    def heartbeat(self):
+        """
+        发送WebSocket心跳包并等待回应
         :return: Boolean - 响应心跳包返回True否则返回False
         """
-        WebSocketProtocolUtil.send_frame('', index, conn_map, b'\x89')  # 发送 PING 心跳包
-        recv_buffer = WebSocketProtocolUtil.recv_frame(index, conn_map)  # 接受WebSocket 数据帧
+        self.send_frame('', b'\x89')  # 发送PING心跳包
+        recv_buffer = self.recv_buffer()  # 接受WebSocket 数据帧
         res_tuple = WebSocketProtocolUtil.bytify_buffer(buffer=recv_buffer)
-        if res_tuple[5] == 10:  # WebSocket 数据帧为 PONG 心跳包
+        if res_tuple[5] == 10:  # WebSocket控制帧为PONG心跳包
+            log_debug.logger.info('WebSocket {0} 连接建立成功'.format(self.index))
             return True
         else:
+            log_debug.logger.error('WebSocket {0} 连接建立失败'.format(self.index))
             return False
+
+    def remove_conn(self):
+        """
+        关闭socket连接, 并从集合中删除socket句柄
+        :return:
+        """
+        conn = self.conn
+        conn.close()  # 释放socket连接
+        del self.conn_map[self.index]
+        log_debug.logger.error('WebSocket {0} 连接建立关闭'.format(self.index))
 
     @staticmethod
     def calc_frame_length(msg):
@@ -251,8 +235,6 @@ class WebSocketProtocolUtil:
             frame_header_length = 14  # 2+8+4
         else:
             frame_header_length = 6  # 2+4
-        # frame_payload_length = int(frame_payload_length)
-        # frame_header_length = int(frame_header_length)
         return frame_payload_length, frame_header_length
 
     @staticmethod
@@ -302,43 +284,3 @@ class WebSocketProtocolUtil:
                           frame_payload_length])
         return tuple(
             [res, frame_fin, frame_rsv1, frame_rsv2, frame_rsv3, frame_opcode, frame_mask, frame_payload_length])
-
-    @staticmethod
-    def respond_frame(frame_tuple, index, conn_map):
-        """
-        响应WebSocket Client 发来的 WebSocket 数据帧
-        :param frame_tuple: tuple -  来自 WebSocket Client 数据帧解析后的数据
-        :param index: int/str - Socket索引号
-        :param conn_map: dictproxy - WebSocket Client连接映射表
-        :return: tuple(opcode,info) - 数据帧中的opcode字段, 若opcode为1则info置为client_mac_addr, 其他情况为提示信息
-        """
-        # TODO 解析 opcode 为0, 2的数据帧
-        if frame_tuple[5] == 1:
-            client_mac_addr = WebSocketIdentifyUtil.parse_identity(frame_tuple[0])  # 解析身份认证信息
-            if client_mac_addr:  # 身份认证信息解析结果不为空
-                log_debug.logger.info('WebSocket 身份认证成功'.format(index))
-                WebSocketIdentifyUtil.respond_identity(index, conn_map, True)  # 响应身份认证信息
-            else:  # WebSocket Client身份认证信息为空
-                log_debug.logger.error('WebSocket 身份认证失败'.format(index))
-                WebSocketIdentifyUtil.respond_identity(index, conn_map, False)
-            return 1, client_mac_addr
-        elif frame_tuple[5] == 8:  # opcode 等于0x08为收到关闭控制帧
-            WebSocketProtocolUtil.send_frame('', index, conn_map, b'\x88')  # 响应 CLOSE 控制帧
-            return 8, 'Receive CLOSE'
-        elif frame_tuple[5] == 9:  # opcode 等于0x09为收到 PING 心跳包控制帧
-            WebSocketProtocolUtil.send_frame('', index, conn_map, b'\x8A')  # 响应 PING 心跳包控制帧
-            return 9, 'Receive PING'
-        elif frame_tuple[5] == 10:  # opcode 等于0x0A为收到 PONG 心跳包控制帧
-            return 10, 'Receive PONG'
-
-    @staticmethod
-    def remove_conn(index, conn_map):
-        """
-        关闭socket连接, 并从集合中删除socket句柄
-        :param index: int/str - Socket索引号
-        :param conn_map: dictproxy - WebSocket Client连接映射表
-        :return:
-        """
-        conn = WebSocketProtocolUtil.get_socket_fd(index, conn_map)
-        conn.close()  # 释放socket连接
-        del conn_map[index]

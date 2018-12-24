@@ -2,40 +2,36 @@
 # -*- coding: utf-8 -*-
 
 """
-File : heartbeat.py
+File : websocket_auth.py
 Author : Zerui Qin
 CreateDate : 2018-11-18 10:00:00
 LastModifiedDate : 2018-11-18 10:00:00
-Note : Agent心跳包接口
+Note : WebSocket连接鉴权接口
 """
-
 from flask_restful import Resource
 from flask_restful import fields
 from flask_restful import marshal_with
 from flask_restful import reqparse
 
-from apps.db_model import AgentHeartbeatLogs
-from apps.db_model import db
 from apps.v1 import api
 from utils import permission
+from utils import process_common
 
 
-class Heartbeat(Resource):
+class WebSocketAuth(Resource):
     """
-    Agent心跳包接口
+    WebSocket连接鉴权接口
     """
 
     def __init__(self):
         """
         初始化
         """
-        # 心跳包接口参数解析失败提示所有错误
         self.post_parser = reqparse.RequestParser(bundle_errors=True)
         self.post_parser.add_argument('mac_addr', required=True, type=str, help='mac_addr required')
         self.post_parser.add_argument('access_token', required=True, type=str, help='token required')
-        self.post_parser.add_argument('create_time', required=True, type=str, help='create_time required')
 
-    post_response_fields = {
+    post_resp_fields = {
         'status': fields.Integer,
         'state': fields.String,
         'message': fields.Nested(
@@ -43,7 +39,7 @@ class Heartbeat(Resource):
         )
     }
 
-    @marshal_with(post_response_fields)
+    @marshal_with(post_resp_fields)
     def post(self):
         """
         POST方法
@@ -53,17 +49,10 @@ class Heartbeat(Resource):
         args = self.post_parser.parse_args()
         mac_addr = args.get('mac_addr')  # mac_addr参数
         access_token = args.get('access_token')  # token参数
-        create_time = args.get('create_time')  # create_time参数
-        if permission.Certify.certify_agent(mac_addr, access_token):
-            hb = db.session.query(AgentHeartbeatLogs).filter_by(mac_addr=mac_addr).first()
-            if hb is None:
-                item = AgentHeartbeatLogs(mac_addr, create_time)
-                db.session.add(item)  # 新增心跳记录
-                db.session.commit()
-            else:
-                hb.create_time = create_time
-                db.session.commit()
-            return {'status': '1', 'state': 'success', 'message': {'info': 'Watero server is online'}}
+        if permission.Certify.certify_agent(mac_addr, access_token):  # Agent验证成功
+            process_common.websocket_share_dict[mac_addr] = process_common.websocket_share_dict.pop(1)
+            return {'status': '1', 'state': 'success',
+                    'message': {'info': 'WebSocket connection authentication successfully'}}
 
 
-api.add_resource(Heartbeat, '/heartbeat', endpoint='heartbeat')
+api.add_resource(WebSocketAuth, '/websocketauth', endpoint='websocketauth')

@@ -17,7 +17,7 @@ from flask_restful import reqparse
 from apps.v1 import api
 from utils import permission
 from utils.process_common import websocket_share_dict
-from websocket.websocket_util import WebSocketProtocolUtil
+from websocket.websocket_common import WebSocketProtocolUtil
 
 
 class Control(Resource):
