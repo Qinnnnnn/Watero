@@ -1,19 +1,8 @@
 version: "3"
 
 services:
-  watero_center:
+  server:
     build: .
     container_name: watero_center
     ports:
       - "5000:5000"
-    depends_on:
-      - "watero_center_mysql"
-  watero_center_mysql:
-    image: mysql
-    container_name: watero_center_mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=Qz.ZXJ.1997
-    ports:
-      - "3306:3306"
-    volumes:
-      - ~/Data/mysql:/var/lib/mysql
