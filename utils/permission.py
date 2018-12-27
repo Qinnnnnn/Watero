@@ -9,11 +9,9 @@ LastModifiedDate : 2018-12-07 10:00:00
 Note : 验证Agent合法性
 """
 
-from src.restfuls.apps.db_model import db
 from src.restfuls.apps.db_model import AgentRegisterLogs
-
 from src.restfuls.apps.db_model import ClientRegisterLogs
-
+from src.restfuls.apps.db_model import db
 from utils import abort
 from utils import token_core
 
@@ -53,17 +51,43 @@ class Certify:
             return False
 
     @staticmethod
+    def abort_agent(flag_status):
+        """
+        拒绝Agent访问方法
+        :param flag_status:
+        :return:
+        """
+        if flag_status==1:
+
+
+    @staticmethod
     def certify_client(access_id, access_secret):
         rt = db.session.query(ClientRegisterLogs).filter_by(access_id=access_id).first()
         # TODO 采用 MD5 存储密码
-        if rt and rt.status == 1:
-            if rt.access_secret == access_secret:
-                return True
-            else:
-                msg = {'info': 'Access denied, access_secret is incorrect'}
-                abort.abort_with_msg(403, 0, 'error', **msg)
-                return False
-        else:
-            msg = {'info': 'Access denied, please register first'}
-            abort.abort_with_msg(403, 0, 'error', **msg)
-            return False
+        if rt:  # 存在access_id记录
+            if rt.status == 1:  # access_id状态为可用
+                if rt.access_secret == access_secret:  # access_id对应的access_secret正确
+                    return 0
+                else:  # access_id对应的access_secret错误
+                    return 3
+            else:  # access_id状态为不可用
+                return 2
+        else:  # 不存在access_id记录
+            return 1
+
+    @staticmethod
+    def abort_client(flag_status):
+        """
+        拒绝Client访问方法
+        :param flag_status: 错误状态码
+        :return:
+        """
+        if flag_status == 1:
+            msg = {'info': 'Access denied, access_id does not exist'}
+            abort.abort_with_msg(403, 1, 'error', **msg)
+        elif flag_status == 2:
+            msg = {'info': 'Access denied, access_id is deactivate'}
+            abort.abort_with_msg(403, 2, 'error', **msg)
+        elif flag_status == 3:
+            msg = {'info': 'Access denied, access_secret is incorrect'}
+            abort.abort_with_msg(403, 3, 'error', **msg)

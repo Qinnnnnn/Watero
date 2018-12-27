@@ -36,7 +36,6 @@ class AgentControl(Resource):
         self.post_parser.add_argument('access_secret', required=True, type=str, help='access_token field required')
         self.post_parser.add_argument('control', required=True, type=str, help='control field required')
         self.post_parser.add_argument('create_time', required=True, type=str, help='create_time field required')
-        self.wsp = WebSocketProtocol(1, 1)
 
     response_fields = {
         'status': fields.Integer,
@@ -65,7 +64,8 @@ class AgentControl(Resource):
                 'control': control,
                 'create_time': create_time
             }
-            self.wsp.send_frame(str(control_msg), mac_addr, websocket_share_dict)
+            wsp = WebSocketProtocol(mac_addr, websocket_share_dict)
+            wsp.send_frame(str(control_msg))
             return {'status': '1', 'state': 'success',
                     'message': {'info': 'Control information was delivered successfully'}}
 
