@@ -11,8 +11,8 @@ Note : 初始化Flask
 
 from flask import Flask
 
-from apps.extension import db
-from apps.v1 import api_bp
+from src.restfuls.apps.extension import db
+from src.restfuls.apps.v1 import api_bp
 
 
 def register_extension(app):

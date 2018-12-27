@@ -14,13 +14,13 @@ from flask_restful import fields
 from flask_restful import marshal_with
 from flask_restful import reqparse
 
-from apps.db_model import AgentHeartbeatLogs
-from apps.db_model import db
-from apps.v1 import api
+from src.restfuls.apps.db_model import AgentHeartbeatLogs
+from src.restfuls.apps.db_model import db
+from src.restfuls.apps.v1 import api
 from utils import permission
 
 
-class Heartbeat(Resource):
+class AgentHeartbeat(Resource):
     """
     Agent心跳包接口
     """
@@ -66,4 +66,4 @@ class Heartbeat(Resource):
             return {'status': '1', 'state': 'success', 'message': {'info': 'Watero server is online'}}
 
 
-api.add_resource(Heartbeat, '/heartbeat', endpoint='heartbeat')
+api.add_resource(AgentHeartbeat, '/heartbeat', endpoint='heartbeat')

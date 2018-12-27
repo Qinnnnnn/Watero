@@ -14,13 +14,13 @@ from flask_restful import fields
 from flask_restful import marshal_with
 from flask_restful import reqparse
 
-from apps.v1 import api
+from src.restfuls.apps.v1 import api
+from src.websockets.protocol import WebSocketProtocol
 from utils import permission
-from utils.process_common import websocket_share_dict
-from websocket.websocket_common import WebSocketProtocolUtil
+from utils.share_core import websocket_share_dict
 
 
-class Control(Resource):
+class AgentControl(Resource):
     """
     Agent控制接口
     """
@@ -36,6 +36,7 @@ class Control(Resource):
         self.post_parser.add_argument('access_secret', required=True, type=str, help='access_token field required')
         self.post_parser.add_argument('control', required=True, type=str, help='control field required')
         self.post_parser.add_argument('create_time', required=True, type=str, help='create_time field required')
+        self.wsp = WebSocketProtocol(1, 1)
 
     response_fields = {
         'status': fields.Integer,
@@ -58,15 +59,15 @@ class Control(Resource):
         mac_addr = args.get('mac_addr')  # mac_addr参数
         control = args.get('control')
         create_time = args.get('create_time')  # create_time参数
-        if permission.Certify.certify_app(access_id, access_secret):  # App通过验证
+        if permission.Certify.certify_client(access_id, access_secret):  # App通过验证
             control_msg = {
                 'mac_addr': mac_addr,
                 'control': control,
                 'create_time': create_time
             }
-            WebSocketProtocolUtil.send_frame(str(control_msg), mac_addr, websocket_share_dict)
+            self.wsp.send_frame(str(control_msg), mac_addr, websocket_share_dict)
             return {'status': '1', 'state': 'success',
                     'message': {'info': 'Control information was delivered successfully'}}
 
 
-api.add_resource(Control, '/control', endpoint='control')
+api.add_resource(AgentControl, '/control', endpoint='control')

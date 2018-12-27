@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-File : token_common.py
+File : token_core.py
 Author : Zerui Qin
 CreateDate : 2018-12-07 10:00:00
 LastModifiedDate : 2018-12-07 10:00:00

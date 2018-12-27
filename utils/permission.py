@@ -9,13 +9,13 @@ LastModifiedDate : 2018-12-07 10:00:00
 Note : 验证Agent合法性
 """
 
-from apps.db_model import db
-from apps.db_model import AgentRegisterLogs
+from src.restfuls.apps.db_model import db
+from src.restfuls.apps.db_model import AgentRegisterLogs
 
-from apps.db_model import AccessSecret
+from src.restfuls.apps.db_model import ClientRegisterLogs
 
 from utils import abort
-from utils import token_common
+from utils import token_core
 
 
 class Certify:
@@ -41,7 +41,7 @@ class Certify:
                 msg = {'info': 'Access denied'}
                 abort.abort_with_msg(403, 0, 'error', **msg)
                 return False
-            elif token_common.certify_token(mac_addr, rt.access_token) is False:  # token已过期
+            elif token_core.certify_token(mac_addr, rt.access_token) is False:  # token已过期
                 msg = {'info': 'Access token is expired, please register again'}
                 abort.abort_with_msg(403, 3, 'error', **msg)
                 return False
@@ -53,8 +53,8 @@ class Certify:
             return False
 
     @staticmethod
-    def certify_app(access_id, access_secret):
-        rt = db.session.query(AccessSecret).filter_by(access_id=access_id).first()
+    def certify_client(access_id, access_secret):
+        rt = db.session.query(ClientRegisterLogs).filter_by(access_id=access_id).first()
         # TODO 采用 MD5 存储密码
         if rt and rt.status == 1:
             if rt.access_secret == access_secret:

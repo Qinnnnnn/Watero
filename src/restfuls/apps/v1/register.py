@@ -14,15 +14,15 @@ from flask_restful import fields
 from flask_restful import marshal_with
 from flask_restful import reqparse
 
-from apps.db_model import AgentRegisterLogs
-from apps.db_model import db
-from apps.v1 import api
+from src.restfuls.apps.db_model import AgentRegisterLogs
+from src.restfuls.apps.db_model import db
+from src.restfuls.apps.v1 import api
 from utils import abort
-from utils import token_common
+from utils import token_core
 from utils import permission
 
 
-class Register(Resource):
+class AgentRegister(Resource):
     """
     Agent注册接口
     """
@@ -59,7 +59,7 @@ class Register(Resource):
         args = self.get_parser.parse_args()  # 解析参数
         access_id = args.get('access_id')
         access_secret = args.get('access_secret')
-        self.is_permission = permission.Certify.certify_app(access_id, access_secret)  # 验证App是否授权
+        self.is_permission = permission.Certify.certify_client(access_id, access_secret)  # 验证App是否授权
         if self.is_permission:  # App通过授权
             rt_list = db.session.execute('SELECT mac_addr,state FROM watero.agent_register_logs').fetchall()
             return {'status': '1', 'state': 'success', 'message': rt_list}
@@ -72,7 +72,7 @@ class Register(Resource):
         """
         args = self.post_parser.parse_args()  # 解析参数
         mac_addr = args.get('mac_addr')
-        access_token = token_common.generate_token(msg=mac_addr)  # 计算access_token
+        access_token = token_core.generate_token(msg=mac_addr)  # 计算access_token
 
         rt = db.session.query(AgentRegisterLogs).filter_by(mac_addr=mac_addr).first()  # 查询Agent注册表
         if rt and rt.status == 1:
@@ -89,4 +89,4 @@ class Register(Resource):
             abort.abort_with_msg(403, 0, 'error', **msg)
 
 
-api.add_resource(Register, '/register', endpoint='register')
+api.add_resource(AgentRegister, '/register', endpoint='register')

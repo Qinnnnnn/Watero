@@ -3,7 +3,7 @@ import socket
 import time
 
 from utils.log import log_debug
-from websocket.websocket_connection import WebSocketConnection
+from src.websockets.websocket import WebSocketConnection
 
 
 class WebSocketServer:

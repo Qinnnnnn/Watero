@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-File : device_resource.py
+File : resource.py
 Author : Zerui Qin
 CreateDate : 2018-12-07 10:00:00
 LastModifiedDate : 2018-12-07 10:00:00
@@ -14,13 +14,13 @@ from flask_restful import marshal_with
 from flask_restful import reqparse
 from flask_restful import Resource
 
-from apps.db_model import db
-from apps.db_model import DeviceResourceLogs
+from src.restfuls.apps.db_model import db
+from src.restfuls.apps.db_model import AgentResourceLogs
 from utils import permission
-from apps.v1 import api
+from src.restfuls.apps.v1 import api
 
 
-class DeviceResource(Resource):
+class AgentResource(Resource):
     """
     设备资源信息接口
     """
@@ -74,12 +74,12 @@ class DeviceResource(Resource):
         create_time = args.get('create_time')  # create_time参数
 
         if permission.Certify.certify_agent(mac_addr, access_token):
-            item = DeviceResourceLogs(mac_addr, cpu_percent, cpu_count, cpu_freq_current,
-                                      cpu_freq_min, cpu_freq_max, total_memory, available_memory,
-                                      sensors_battery_percent, boot_time, create_time)
+            item = AgentResourceLogs(mac_addr, cpu_percent, cpu_count, cpu_freq_current,
+                                     cpu_freq_min, cpu_freq_max, total_memory, available_memory,
+                                     sensors_battery_percent, boot_time, create_time)
             db.session.add(item)  # 新增设备资源信息记录
             db.session.commit()
             return {'status': '1', 'state': 'success', 'message': {'info': 'Device resource record added'}}
 
 
-api.add_resource(DeviceResource, '/device_resource', endpoint='device_resource')
+api.add_resource(AgentResource, '/resource', endpoint='resource')

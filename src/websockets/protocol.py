@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-File : websocket_common.py
+File : protocol.py
 Author : Zerui Qin
 CreateDate : 2018-12-12 10:00:00
 LastModifiedDate : 2018-12-12 10:00:00
@@ -27,8 +27,6 @@ WebSocket协议数据帧格式
  +---------------------------------------------------------------+
 """
 
-import base64
-import hashlib
 import struct
 
 import six
@@ -36,71 +34,7 @@ import six
 from utils.log import log_debug
 
 
-class WebSocketHandshakeUtil:
-    """
-    WebSocket协议握手工具类
-    """
-
-    def __init__(self, index, conn_map):
-        """
-        初始化
-        :param index: int/str - Socket索引号
-        :param conn_map: dictproxy - WebSocket Client连接映射表
-        """
-        self.index = index
-        self.conn_map = conn_map
-
-        self.header_dict = dict()
-
-    def _generate_token(self, magic_value='258EAFA5-E914-47DA-95CA-C5AB0DC85B11'):
-        """
-        计算握手信息中的Sec-Websocket-Accept字段
-        :param magic_value: RFC 6455文档规定的GUID
-        :return: bytes - sec_websocket_accept值
-        """
-        sec_websocket_key = self.header_dict.get('Sec-WebSocket-Key')  # 获取Sec-WebSocket-Key字段
-        websocket_key = hashlib.sha1((sec_websocket_key + magic_value).encode(encoding='utf-8')).digest()
-        sec_websocket_accept = base64.b64encode(websocket_key)
-        return sec_websocket_accept.decode('utf-8')
-
-    def parse_handshake_request(self, msg):
-        """
-        解析WebSocket握手请求
-        :param msg: str - WebSocket握手请求
-        :return: dict - 握手请求头部映射字典
-        """
-        if msg.find('\r\n\r\n') == -1:  # 不存在\r\n\r\n分割符号
-            log_debug.logger.error('WebSocket {0} 握手请求解析失败'.format(self.index))
-            return 1
-        else:
-            header, payload_data = msg.split('\r\n\r\n', 1)  # 按照\r\n\r\n分割1次, 结果为: header, payload data
-            for item in header.split('\r\n')[1:]:  # 丢弃HTTP请求header域第一行数据
-                key, value = item.split(': ', 1)  # 逐行解析Request Header信息
-                self.header_dict[key] = value  # 解析结果存入header_dict
-            if self.header_dict.get('Sec-WebSocket-Key') is None:  # 不存在Sec-WebSocket-Key
-                log_debug.logger.error('WebSocket {0} 握手请求解析失败'.format(self.index))
-                return 2
-            else:  # 存在Sec-WebSocket-Key
-                log_debug.logger.info('WebSocket {0} 握手请求解析成功'.format(self.index))
-                return 0
-
-    def respond_handshake_request(self):
-        """
-        响应WebSocket握手请求
-        :return:
-        """
-        sec_websocket_accept = self._generate_token()
-        response = 'HTTP/1.1 101 Switching Protocols\r\n' \
-                   'Connection: Upgrade\r\n' \
-                   'Upgrade: websocket\r\n' \
-                   'Sec-WebSocket-Accept: ' + sec_websocket_accept + '\r\n\r\n'
-        wpu = WebSocketProtocolUtil(self.index, self.conn_map)
-        conn = wpu.conn()
-        conn.send(response.encode('utf-8'))
-        log_debug.logger.info('WebSocket {0} 握手请求响应成功'.format(self.index))
-
-
-class WebSocketProtocolUtil:
+class WebSocketProtocol:
     """
     WebSocket协议数据交互工具类
     """
@@ -141,12 +75,12 @@ class WebSocketProtocolUtil:
                 log_debug.logger.info('WebSocket {0} 异常关闭'.format(self.index))
                 return None
             else:  # WebSocket Server正确接收到数据帧
-                res_tuple = WebSocketProtocolUtil.bytify_buffer(buffer=recv_buffer)  # 解析数据帧字节序列
+                res_tuple = WebSocketProtocol.bytify_buffer(buffer=recv_buffer)  # 解析数据帧字节序列
                 if res_tuple[1] == 0:  # recv_buffer帧长度不为零且FIN字段为0
                     # TODO 解析WebSocket分片的数据帧
                     pass
                 elif res_tuple[1] == 1:  # recv_buffer帧长度不为零且FIN字段为1
-                    frame_payload_length, frame_header_length = WebSocketProtocolUtil.calc_frame_length(recv_buffer)
+                    frame_payload_length, frame_header_length = WebSocketProtocol.calc_frame_length(recv_buffer)
                     recv_buffer_length = len(recv_buffer)  # 计算接收到的字节序列长度
                     if recv_buffer_length < frame_payload_length + frame_header_length:  # 数据未完成接收
                         continue
@@ -201,7 +135,7 @@ class WebSocketProtocolUtil:
         """
         self.send_frame('', b'\x89')  # 发送PING心跳包
         recv_buffer = self.recv_buffer()  # 接受WebSocket 数据帧
-        res_tuple = WebSocketProtocolUtil.bytify_buffer(buffer=recv_buffer)
+        res_tuple = WebSocketProtocol.bytify_buffer(buffer=recv_buffer)
         if res_tuple[5] == 10:  # WebSocket控制帧为PONG心跳包
             log_debug.logger.info('WebSocket {0} 连接建立成功'.format(self.index))
             return True

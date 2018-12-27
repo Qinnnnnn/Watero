@@ -9,14 +9,14 @@ LastModifiedDate : 2018-11-18 10:00:00
 Note : 定义SQLAlchemy插件的数据库表映射类
 """
 
-from apps.extension import db
+from src.restfuls.apps.extension import db
 
 
-class AccessSecret(db.Model):
+class ClientRegisterLogs(db.Model):
     """
     App注册表
     """
-    __tablename__ = 'access_secret'
+    __tablename__ = 'client_register_logs'
     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
     access_id = db.Column(db.Text, nullable=True)
     access_secret = db.Column(db.Text, nullable=True)
@@ -30,7 +30,7 @@ class AccessSecret(db.Model):
         self.state = state
 
     def __repr__(self):
-        return '<AccessSecret>'
+        return '<ClientRegisterLogs>'
 
 
 class AgentRegisterLogs(db.Model):
@@ -71,11 +71,11 @@ class AgentHeartbeatLogs(db.Model):
         return '<AgentHeartbeatLogs>'
 
 
-class DeviceResourceLogs(db.Model):
+class AgentResourceLogs(db.Model):
     """
     设备资源信息数据表
     """
-    __tablename__ = 'device_resource_logs'
+    __tablename__ = 'agent_resource_logs'
     id = db.Column(db.INT, nullable=False, autoincrement=True, primary_key=True)
     mac_addr = db.Column(db.String(17), nullable=False)
     cpu_percent = db.Column(db.Float)
@@ -104,4 +104,4 @@ class DeviceResourceLogs(db.Model):
         self.create_time = create_time  # 记录产生时间
 
     def __repr__(self):
-        return '<DeviceResourceLogs>'
+        return '<AgentResourceLogs>'
