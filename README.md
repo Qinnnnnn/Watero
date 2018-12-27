@@ -8,9 +8,9 @@
 
 ## 系统架构
 
-![image](https://wx3.sinaimg.cn/large/a1bd622cgy1fykcsorckcj20r10ntjsb.jpg)
-* 基于Flask实现HTTP RESTful API接口，作为数据通道
-* 基于Socket实现RFC 6455规定的WebSocket协议，作为控制通道
+![image](https://wx3.sinaimg.cn/large/a1bd622cgy1fyl9bqj3asj20s50ntaat.jpg)
+* 基于Flask实现RESTful API接口，作为数据通道
+* 基于Socket实现RFC 6455 WebSocket协议，作为控制通道
 
 ## 如何使用
 
