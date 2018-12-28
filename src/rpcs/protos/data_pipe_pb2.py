@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
     syntax='proto3',
     serialized_options=None,
     serialized_pb=_b(
-        '\n\x0f\x64\x61ta_pipe.proto\x12\x08\x64\x61tapipe\"4\n\x0fTransmitRequest\x12\x10\n\x08mac_addr\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\"\x1f\n\rTransmitReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x32P\n\x08\x44\x61taFlow\x12\x44\n\x0cTransmitData\x12\x19.datapipe.TransmitRequest\x1a\x17.datapipe.TransmitReply\"\x00\x62\x06proto3')
+        '\n\x0f\x64\x61ta_pipe.proto\x12\x08\x64\x61tapipe\"-\n\x0fTransmitRequest\x12\r\n\x05index\x18\x01 \x01(\t\x12\x0b\n\x03msg\x18\x02 \x01(\t\"\x1f\n\rTransmitReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x32P\n\x08\x44\x61taFlow\x12\x44\n\x0cTransmitData\x12\x19.datapipe.TransmitRequest\x1a\x17.datapipe.TransmitReply\"\x00\x62\x06proto3')
 )
 
 _TRANSMITREQUEST = _descriptor.Descriptor(
@@ -30,14 +30,14 @@ _TRANSMITREQUEST = _descriptor.Descriptor(
     containing_type=None,
     fields=[
         _descriptor.FieldDescriptor(
-            name='mac_addr', full_name='datapipe.TransmitRequest.mac_addr', index=0,
+            name='index', full_name='datapipe.TransmitRequest.index', index=0,
             number=1, type=9, cpp_type=9, label=1,
             has_default_value=False, default_value=_b("").decode('utf-8'),
             message_type=None, enum_type=None, containing_type=None,
             is_extension=False, extension_scope=None,
             serialized_options=None, file=DESCRIPTOR),
         _descriptor.FieldDescriptor(
-            name='message', full_name='datapipe.TransmitRequest.message', index=1,
+            name='msg', full_name='datapipe.TransmitRequest.msg', index=1,
             number=2, type=9, cpp_type=9, label=1,
             has_default_value=False, default_value=_b("").decode('utf-8'),
             message_type=None, enum_type=None, containing_type=None,
@@ -56,7 +56,7 @@ _TRANSMITREQUEST = _descriptor.Descriptor(
     oneofs=[
     ],
     serialized_start=29,
-    serialized_end=81,
+    serialized_end=74,
 )
 
 _TRANSMITREPLY = _descriptor.Descriptor(
@@ -85,8 +85,8 @@ _TRANSMITREPLY = _descriptor.Descriptor(
     extension_ranges=[],
     oneofs=[
     ],
-    serialized_start=83,
-    serialized_end=114,
+    serialized_start=76,
+    serialized_end=107,
 )
 
 DESCRIPTOR.message_types_by_name['TransmitRequest'] = _TRANSMITREQUEST
@@ -113,8 +113,8 @@ _DATAFLOW = _descriptor.ServiceDescriptor(
     file=DESCRIPTOR,
     index=0,
     serialized_options=None,
-    serialized_start=116,
-    serialized_end=196,
+    serialized_start=109,
+    serialized_end=189,
     methods=[
         _descriptor.MethodDescriptor(
             name='TransmitData',

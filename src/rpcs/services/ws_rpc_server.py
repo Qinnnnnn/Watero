@@ -25,9 +25,9 @@ _PORT = '6000'
 class DataFlow(data_pipe_pb2_grpc.DataFlowServicer):
 
     def TransmitData(self, request, context):
-        mac_addr = request.mac_addr
-        message = request.message
-        return data_pipe_pb2.TransmitReply(0)
+        index = request.index
+        msg = request.msg
+        return data_pipe_pb2.TransmitReply()
 
 
 def serve():

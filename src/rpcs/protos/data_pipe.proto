@@ -10,8 +10,8 @@ service DataFlow {
 
 // 输入参数
 message TransmitRequest {
-  string mac_addr = 1;
-  string message = 2;
+  string index = 1;
+  string msg = 2;
 }
 
 // 输出参数
