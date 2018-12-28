@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package helloworld;
+
+// 定义服务
+service Greeter {
+  // 定义函数，输入参数为HelloRequest，输出参数为HelloReply
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
+
+// 输入参数包含一个变量
+message HelloRequest {
+  string name = 1;
+}
+
+// 输出参数包含一个变量
+message HelloReply {
+  string message = 1;
+}

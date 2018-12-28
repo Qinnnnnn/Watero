@@ -20,3 +20,4 @@ from src.restfuls.apps.v1.control import AgentControl
 from src.restfuls.apps.v1.heartbeat import AgentHeartbeat
 from src.restfuls.apps.v1.register import AgentRegister
 from src.restfuls.apps.v1.resource import AgentResource
+from src.restfuls.apps.v1.auth import AgentAuth

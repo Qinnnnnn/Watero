@@ -18,7 +18,7 @@ def generate_token(msg, expire=31536000):
     """
     消息与当前时间戳混淆生成token
     :param msg: str - 用户给定的消息,需要用户保存以便之后验证token,每次产生token时的key可以是同一个key
-    :param expire: int - 默认值为365天过期(秒)
+    :param expire: int - 默认值为365天过期
     :return: token
     """
     # 获取当前秒级时间戳 + 时间戳阈值

@@ -6,7 +6,7 @@ File : db_model.py
 Author : Zerui Qin
 CreateDate : 2018-11-18 10:00:00
 LastModifiedDate : 2018-11-18 10:00:00
-Note : 定义SQLAlchemy插件的数据库表映射类
+Note : 定义SQLAlchemy数据模型
 """
 
 from src.restfuls.apps.extension import db
@@ -14,20 +14,18 @@ from src.restfuls.apps.extension import db
 
 class ClientRegisterLogs(db.Model):
     """
-    App注册表
+    Client注册表
     """
     __tablename__ = 'client_register_logs'
     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
-    access_id = db.Column(db.Text, nullable=True)
-    access_secret = db.Column(db.Text, nullable=True)
-    status = db.Column(db.Integer, nullable=False)
-    state = db.Column(db.Text, nullable=False)
+    client_id = db.Column(db.Text, nullable=True)
+    client_secret = db.Column(db.Text, nullable=True)
+    status = db.Column(db.Integer, nullable=False, default=1)
 
-    def __init__(self, access_id, access_secret, status, state):
-        self.access_id = access_id
-        self.access_secret = access_secret
+    def __init__(self, access_id, access_secret, status):
+        self.client_id = access_id
+        self.client_secret = access_secret
         self.status = status
-        self.state = state
 
     def __repr__(self):
         return '<ClientRegisterLogs>'
@@ -35,20 +33,18 @@ class ClientRegisterLogs(db.Model):
 
 class AgentRegisterLogs(db.Model):
     """
-    MAC地址维表, Agent注册数据表
+    Agent注册表
     """
     __tablename__ = 'agent_register_logs'
     id = db.Column(db.Integer, nullable=False, autoincrement=True, primary_key=True)
     mac_addr = db.Column(db.String(17), nullable=False, unique=True)
     access_token = db.Column(db.Text, nullable=True)
-    status = db.Column(db.Integer, nullable=False)
-    state = db.Column(db.Text, nullable=False)
+    status = db.Column(db.Integer, nullable=False, default=1)
 
-    def __init__(self, mac_addr, access_token, status, state):
+    def __init__(self, mac_addr, access_token, status):
         self.mac_addr = mac_addr
         self.access_token = access_token
         self.status = status
-        self.state = state
 
     def __repr__(self):
         return '<AgentRegisterLogs>'
@@ -64,8 +60,8 @@ class AgentHeartbeatLogs(db.Model):
     create_time = db.Column(db.DateTime, nullable=False)
 
     def __init__(self, mac_addr, create_time):
-        self.mac_addr = mac_addr  # MAC地址
-        self.create_time = create_time  # 心跳包发送时间
+        self.mac_addr = mac_addr
+        self.create_time = create_time
 
     def __repr__(self):
         return '<AgentHeartbeatLogs>'
