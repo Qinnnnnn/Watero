@@ -13,8 +13,8 @@ import base64
 import hashlib
 
 from utils.log import log_debug
-from .exception import InvalidFormat, InvalidHeader, InvalidMultiHeader
-from .protocol import WebSocketProtocol
+from src.websockets.exception import InvalidFormat, InvalidHeader, InvalidMultiHeader
+from src.websockets.protocol import WebSocketProtocol
 
 
 class WebSocketHandshake:

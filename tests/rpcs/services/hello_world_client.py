@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-File : client.py
+File : hello_world_client.py
 Author : Zerui Qin
 CreateDate : 2018-12-28 10:00:00
 LastModifiedDate : 2018-12-28 10:00:00
@@ -11,7 +11,8 @@ Note : gRPC client demo
 
 import grpc
 
-from tests.rpcs.protos import helloworld_pb2, helloworld_pb2_grpc
+from tests.rpcs.protos import hello_world_pb2
+from tests.rpcs.protos import hello_world_pb2_grpc
 
 _HOST = 'localhost'
 _PORT = '6060'
@@ -19,8 +20,8 @@ _PORT = '6060'
 
 def run():
     conn = grpc.insecure_channel(_HOST + ':' + _PORT)
-    client = helloworld_pb2_grpc.GreeterStub(channel=conn)
-    response = client.SayHello(helloworld_pb2.HelloRequest(name='James'))
+    client = hello_world_pb2_grpc.GreeterStub(channel=conn)
+    response = client.SayHello(hello_world_pb2.HelloRequest(name='Clever Moon', age=18))
     print("received: " + response.message)
 
 

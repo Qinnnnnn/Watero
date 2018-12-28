@@ -43,54 +43,41 @@ class WebSocketProtocol:
         """
         初始化
         :param index: int/str - Socket索引号
-        :param conn_map: dictproxy - WebSocket Client连接映射表
+        :param conn_map: dict - WebSocket Client连接映射表
         """
         self.index = index
         self.conn_map = conn_map
-        self.conn = self._get_socket_fd()
-
-    def _get_socket_fd(self):
-        """
-        通过socket标识和WebSocket连接映射表获取socket fd
-        :return:
-        """
-        i = 0
-        while True:  # 由于DictProxy对象获取key对应的value可能为None，故采用循环获取socket fd
-            conn = self.conn_map.get(self.index)
-            if conn or i >= 10:
-                break
-            else:
-                i += 1
-        return conn
+        self.conn = self.conn_map.get(self.index)
 
     def recv_buffer(self):
         """
-        因TCP/IP协议栈下层协议可能导致数据分片，多次调用socket.recv函数确保接收完整WebSocket数据帧
+        WebSocket数据帧接收函数
         :return: bytes - 接收到的数据帧
         """
         recv_buffer = b''
         while True:
             recv_buffer += self.conn.recv(1024)  # 每次接收1024字节数据
-            if len(recv_buffer) == 0:  # WebSocket Client异常退出导致recv_buffer长度为零
-                log_debug.logger.info('WebSocket {0} 异常关闭'.format(self.index))
+            if len(recv_buffer) == 0:  # Socket异常关闭，未接收数据
+                log_debug.logger.error('WebSocket {0} 异常关闭'.format(self.index))
                 return None
-            else:  # WebSocket Server正确接收到数据帧
+            else:  # Socket正常接收数据
                 res_tuple = WebSocketProtocol.bytify_buffer(buffer=recv_buffer)  # 解析数据帧字节序列
-                if res_tuple[1] == 0:  # recv_buffer帧长度不为零且FIN字段为0
+                if res_tuple[1] == 0:  # FIN字段为0
                     # TODO 解析WebSocket分片的数据帧
                     pass
-                elif res_tuple[1] == 1:  # recv_buffer帧长度不为零且FIN字段为1
+                elif res_tuple[1] == 1:  # FIN字段为1
                     frame_payload_length, frame_header_length = WebSocketProtocol.calc_frame_length(recv_buffer)
-                    recv_buffer_length = len(recv_buffer)  # 计算接收到的字节序列长度
-                    if recv_buffer_length < frame_payload_length + frame_header_length:  # 数据未完成接收
+                    recv_buffer_length = len(recv_buffer)
+                    if recv_buffer_length < frame_payload_length + frame_header_length:  # WebSocket Server数据帧未接收完整
                         continue
-                    return recv_buffer
+                    else:  # WebSocket Server数据帧接收完整
+                        return recv_buffer
 
     def send_frame(self, msg, frame_frrro=b'\x81'):
         """
-        向WebSocket Client发送消息
+        WebSocket Client数据帧发送函数
         :param msg: str - 待发送消息
-        :param frame_frrro: byte - 数据帧的第1个字节表示FIN RSV1 RSV2 RSV3 opcode
+        :param frame_frrro: byte - 数据帧的第1个字节，FIN RSV1 RSV2 RSV3 opcode字段
         :return:
         """
         msg_length = len(msg.encode())  # 计算消息字节序列长度
@@ -106,8 +93,7 @@ class WebSocketProtocol:
             # TODO 支持消息分片发送
             log_debug.logger.error('消息过长')
         message = frame_frrro + msg.encode('utf-8')
-        conn = self.conn
-        conn.send(message)
+        self.conn.send(message)
 
     def respond_control_frame(self, frame_tuple):
         """
@@ -148,8 +134,7 @@ class WebSocketProtocol:
         关闭socket连接, 并从集合中删除socket句柄
         :return:
         """
-        conn = self.conn
-        conn.close()  # 释放socket连接
+        self.conn.close()  # 释放socket连接
         del self.conn_map[self.index]
         log_debug.logger.error('WebSocket {0} 连接建立关闭'.format(self.index))
 
@@ -174,7 +159,7 @@ class WebSocketProtocol:
     @staticmethod
     def bytify_buffer(buffer):
         """
-        将WebSocket Client发送的字节序列解析出WebSocket数据帧的规定字段值
+        解析WebSocket数据帧字段值
         :param buffer: bytes - 字节序列
         :return: tuple - 数据帧中的规定字段值和payload data
         """

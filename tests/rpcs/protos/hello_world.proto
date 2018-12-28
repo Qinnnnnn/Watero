@@ -8,12 +8,13 @@ service Greeter {
   rpc SayHello (HelloRequest) returns (HelloReply) {}
 }
 
-// 输入参数包含一个变量
+// 输入参数
 message HelloRequest {
   string name = 1;
+  int32 age = 2;
 }
 
-// 输出参数包含一个变量
+// 输出参数
 message HelloReply {
   string message = 1;
 }

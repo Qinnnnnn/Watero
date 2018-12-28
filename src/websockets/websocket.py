@@ -11,10 +11,10 @@ Note : WebSocket建立连接后的连接对象
 
 import threading
 
+from src.websockets.exception import InvalidFormat, InvalidMultiHeader, InvalidHeader
 from src.websockets.handshake import WebSocketHandshake
 from src.websockets.protocol import WebSocketProtocol
 from utils.log import log_debug
-from .exception import InvalidFormat, InvalidMultiHeader, InvalidHeader
 
 
 class WebSocketConnection(threading.Thread):
@@ -29,7 +29,7 @@ class WebSocketConnection(threading.Thread):
         :param index: 当前WebSocket连接的socket标识
         :param conn: 当前WebSocket的socket句柄
         :param host: 当前WebSocket连接的远程主机地址
-        :param remote: 当前WebSocket连接的远程主机地址+端口号
+        :param remote: 当前WebSocket连接的远程主机地址 + 端口号
         :param debug: 是否为调试模式
         """
         # 初始化线程
@@ -52,7 +52,7 @@ class WebSocketConnection(threading.Thread):
 
     def run(self):
         """
-        线程启动
+        线程启动函数
         :return:
         """
         wpu = WebSocketProtocol(self.index, self.conn_map)
