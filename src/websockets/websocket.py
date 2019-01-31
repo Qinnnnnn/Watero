@@ -11,7 +11,8 @@ Note : WebSocket建立连接后的连接对象
 
 import threading
 
-from src.websockets.exception import InvalidFormat, InvalidMultiHeader, InvalidHeader
+from src.websockets.exception import HeaderFormatException, HeaderFieldMultiException, HeaderFieldException, \
+    SocketCloseAbnormalException
 from src.websockets.handshake import WebSocketHandshake
 from src.websockets.protocol import WebSocketProtocol
 from utils.log import log_debug
@@ -42,13 +43,13 @@ class WebSocketConnection(threading.Thread):
         self.remote = remote
         self.debug = debug
 
-        self.is_handshake = False  # WebSocket连接是否握手的标志, 初始化为False
-        self.is_online = False  # WebSocket连接是否在线
-        self.recv_buffer = b''  # 保存接收到的字节序列
-        self.recv_buffer_str = ''  # 保存接收到的字节序列转str
-        self.recv_buffer_length = 0  # 保存接收到的字节序列长度
-        self.frame_header_length = 0  # 保存数据帧头部长度
-        self.frame_payload_length = 0  # 保存数据帧有效载荷长度
+        self.is_handshake = False  # WebSocket连接是否握手
+        self.is_online = False  # WebSocket连接是否响应PING心跳包
+        self.recv_buffer = b''  # 接收到的字节序列
+        self.recv_buffer_str = ''  # 接收到的字符串
+        self.recv_buffer_length = 0  # 接收到的字节序列长度
+        self.frame_header_length = 0  # 数据帧头部长度
+        self.frame_payload_length = 0  # 数据帧有效载荷长度
 
     def run(self):
         """
@@ -57,41 +58,47 @@ class WebSocketConnection(threading.Thread):
         """
         ws_protocol = WebSocketProtocol(self.index, self.conn_map)
         ws_handshake = WebSocketHandshake(self.index, self.conn_map)
-        while True:  # 循环接收WebSocket Client信息
-            if self.is_handshake is False:  # WebSocket未建立连接，响应握手请求
-                self.recv_buffer = self.conn.recv(1024)  # 接收1024字节序列
+
+        while True:  # 循环接收WebSocket Client消息
+            if self.is_handshake is False:  # WebSocket未建立连接
+                self.recv_buffer = self.conn.recv(1024)  # 接收字节序列
                 self.recv_buffer_str = self.recv_buffer.decode('utf-8')  # 字节序列解码
                 try:
-                    ws_handshake.check_request(self.recv_buffer_str)
-                except InvalidFormat as exp:
-                    log_debug.logger.error('WebSocket {0}: {1}'.format(self.index, exp.message))
-                except InvalidMultiHeader as exp:
-                    log_debug.logger.error('WebSocket {0}: {1}'.format(self.index, exp.message))
-                except InvalidHeader as exp:
-                    log_debug.logger.error('WebSocket {0}: {1}'.format(self.index, exp.message))
-                ws_handshake.send_response()
-                self.is_online = ws_protocol.heartbeat()
-                if self.is_online is True:  # WebSocket Client响应心跳成功
-                    self.is_handshake = True  # WebSocket 连接成功建立之后修改握手标志
-                else:  # WebSocket Client响应心跳失败
-                    ws_protocol.remove_conn()
-                    break
+                    ws_handshake.handshake_request_check(self.recv_buffer_str)  # 检查WebSocket请求握手头部
+                except (HeaderFormatException, HeaderFieldMultiException, HeaderFieldException) as exp:
+                    log_debug.logger.error('WebSocket {0}: {1}'.format(self.index, exp.msg))
+
+                ws_handshake.handshake_response()  # 发送WebSocket握手响应
+                log_debug.logger.info('WebSocket {0}: 握手成功'.format(self.index))
+
+                self.is_online = ws_protocol.send_heartbeat()  # 心跳测试
+                if self.is_online is True:
+                    self.is_handshake = True  # WebSocket 连接成功建立，修改握手标志
+                    log_debug.logger.info('WebSocket {0}: 连接建立成功'.format(self.index))
+                else:
+                    ws_protocol.remove_conn()  # WebSocket连接建立失败，删除连接映射表中的当前socket句柄
                 self.recv_buffer_str = ''
             else:  # WebSocket已建立连接，响应控制帧
-                log_debug.logger.info('WebSocket {0} 已连接'.format(self.host))
-                self.recv_buffer = ws_protocol.recv_buffer()
-                if self.recv_buffer:  # 数据不为空
-                    frame_tuple = WebSocketProtocol.bytify_buffer(self.recv_buffer)  # 解析数据帧字节序列
-                    opcode = ws_protocol.respond_control_frame(frame_tuple)  # 响应控制帧
-                    if opcode != 0:
-                        log_debug.logger.error('WebSocket {0} {1}号控制帧已响应'.format(self.index, opcode))
+                try:
+                    frame_tuple = ws_protocol.recv_frame()
+                    self.recv_buffer = frame_tuple[-1]
+                    respond_flag = ws_protocol.respond_control_frame(frame_tuple)  # 响应控制帧
+                    if respond_flag:
+                        log_debug.logger.error(
+                            'WebSocket {0}: opcode {1} 控制帧已响应'.format(self.index, frame_tuple[4]))
                     else:
-                        pass
-                else:  # 数据帧为空, WebSocket 异常关闭
-                    ws_protocol.remove_conn()  # 从 WebSocket 连接映射表中删除句柄
-                    break
+                        log_debug.logger.error(
+                            'WebSocket {0}: opcode {1} 控制帧未响应'.format(self.index, frame_tuple[4]))
+                except SocketCloseAbnormalException as exp:  # WebSocket 异常关闭
+                    ws_protocol.remove_conn()  # 从连接映射表中删除句柄
+                    log_debug.logger.error('WebSocket {0}: {1}'.format(self.index, exp.msg))
+
                 self.recv_buffer = b''
                 self.recv_buffer_str = ''
                 self.recv_buffer_length = 0
                 self.frame_header_length = 0
                 self.frame_payload_length = 0
+
+            if self.conn_map.get(self.index) is None:  # 连接映射表中已不存socket句柄
+                log_debug.logger.error('WebSocket {0}: 连接释放'.format(self.index))
+                break

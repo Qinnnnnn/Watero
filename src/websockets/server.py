@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-File : hello_world_server.py
+File : server.py
 Author : Zerui Qin
 CreateDate : 2018-12-28 10:00:00
 LastModifiedDate : 2018-12-28 10:00:00
@@ -43,7 +43,7 @@ class WebSocketServer:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # 创建socket句柄
 
         while True:  # 初始化socket
-            log_debug.logger.info('WebServer服务器开始监听 {0}:{1}'.format(host, port))
+            log_debug.logger.info('WebSocket服务器开始监听 {0}:{1}'.format(host, port))
             try:
                 self.socket.bind((host, port))  # Socket绑定到IP地址和端口
                 self.socket.listen(5)  # 设置socket最大TCP连接挂起数

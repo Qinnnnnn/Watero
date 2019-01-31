@@ -1,0 +1,153 @@
+[2019-01-30 15:29:31] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 15:29:31] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 15:29:54] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 1 握手成功
+[2019-01-30 15:29:57] [ERROR] file:websocket.py - func:run - at line 80 - WebSocket 1 Socket异常关闭
+[2019-01-30 15:29:57] [ERROR] file:websocket.py - func:run - at line 87 - WebSocket 1 连接释放
+[2019-01-30 15:30:41] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 2 握手成功
+[2019-01-30 15:30:41] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 3 握手成功
+[2019-01-30 15:30:48] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 4 握手成功
+[2019-01-30 15:30:48] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 5 握手成功
+[2019-01-30 15:30:48] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 6 握手成功
+[2019-01-30 15:30:57] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 15:30:57] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 15:31:01] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 1 握手成功
+[2019-01-30 15:31:38] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 2 握手成功
+[2019-01-30 15:32:18] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 15:32:18] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 15:32:28] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 1 握手成功
+[2019-01-30 15:32:28] [ERROR] file:websocket.py - func:run - at line 80 - WebSocket 1 Socket异常关闭
+[2019-01-30 15:32:28] [ERROR] file:websocket.py - func:run - at line 87 - WebSocket 1 连接释放
+[2019-01-30 15:32:33] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 2 握手成功
+[2019-01-30 15:32:33] [ERROR] file:websocket.py - func:run - at line 80 - WebSocket 2 Socket异常关闭
+[2019-01-30 15:32:33] [ERROR] file:websocket.py - func:run - at line 87 - WebSocket 2 连接释放
+[2019-01-30 15:32:34] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 3 握手成功
+[2019-01-30 15:32:34] [ERROR] file:websocket.py - func:run - at line 80 - WebSocket 3 Socket异常关闭
+[2019-01-30 15:32:34] [ERROR] file:websocket.py - func:run - at line 87 - WebSocket 3 连接释放
+[2019-01-30 15:32:36] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 4 握手成功
+[2019-01-30 15:32:36] [ERROR] file:websocket.py - func:run - at line 80 - WebSocket 4 Socket异常关闭
+[2019-01-30 15:32:36] [ERROR] file:websocket.py - func:run - at line 87 - WebSocket 4 连接释放
+[2019-01-30 15:32:37] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 5 握手成功
+[2019-01-30 15:32:37] [ERROR] file:websocket.py - func:run - at line 80 - WebSocket 5 Socket异常关闭
+[2019-01-30 15:32:37] [ERROR] file:websocket.py - func:run - at line 87 - WebSocket 5 连接释放
+[2019-01-30 15:32:44] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 6 握手成功
+[2019-01-30 15:37:21] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 15:37:21] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 15:37:32] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 1 握手成功
+[2019-01-30 15:37:39] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 2 握手成功
+[2019-01-30 15:37:39] [ERROR] file:websocket.py - func:run - at line 80 - WebSocket 2 Socket异常关闭
+[2019-01-30 15:37:39] [ERROR] file:websocket.py - func:run - at line 87 - WebSocket 2 连接释放
+[2019-01-30 15:38:14] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 15:38:14] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 15:38:17] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 1 握手成功
+[2019-01-30 15:38:31] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 15:38:31] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 15:38:33] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 1 握手成功
+[2019-01-30 15:40:53] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 15:40:53] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 15:41:40] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 15:41:40] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 15:41:42] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 1 握手成功
+[2019-01-30 15:42:10] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 15:42:10] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 15:42:13] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 1 握手成功
+[2019-01-30 15:42:53] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 15:42:53] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 15:42:58] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 1 握手成功
+[2019-01-30 15:43:10] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 15:43:10] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 15:43:17] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 15:43:17] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 15:44:01] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 1 握手成功
+[2019-01-30 15:44:05] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 2 握手成功
+[2019-01-30 15:44:06] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 3 握手成功
+[2019-01-30 15:44:10] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 15:44:10] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 15:44:14] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 1 握手成功
+[2019-01-30 15:44:24] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 2 握手成功
+[2019-01-30 15:44:25] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 3 握手成功
+[2019-01-30 15:46:18] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 15:46:18] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 15:46:21] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 1 握手成功
+[2019-01-30 15:46:21] [ERROR] file:protocol.py - func:heartbeat - at line 137 - WebSocket 1 Socket异常关闭
+[2019-01-30 15:46:21] [ERROR] file:websocket.py - func:run - at line 82 - WebSocket 1 连接释放
+[2019-01-30 15:48:04] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 15:48:04] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 15:48:07] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 1 握手成功
+[2019-01-30 15:48:25] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 2 握手成功
+[2019-01-30 15:48:34] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 15:48:34] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 15:48:53] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 1 握手成功
+[2019-01-30 15:49:06] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 2 握手成功
+[2019-01-30 15:49:23] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 15:49:23] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 15:49:45] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 15:49:45] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 15:49:49] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 1 握手成功
+[2019-01-30 15:52:08] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 15:52:08] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 16:03:31] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 1 握手成功
+[2019-01-30 16:07:03] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 16:07:03] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 16:07:07] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 1 握手成功
+[2019-01-30 16:07:17] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 16:07:17] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 16:09:16] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 16:09:16] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 16:11:31] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 16:11:31] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 16:11:31] [ERROR] file:server.py - func:run - at line 52 - WebSocket服务器启动失败: Address already in use
+[2019-01-30 16:11:36] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 16:11:36] [ERROR] file:server.py - func:run - at line 52 - WebSocket服务器启动失败: Address already in use
+[2019-01-30 16:11:41] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 16:11:41] [ERROR] file:server.py - func:run - at line 52 - WebSocket服务器启动失败: Address already in use
+[2019-01-30 16:11:46] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 16:11:46] [ERROR] file:server.py - func:run - at line 52 - WebSocket服务器启动失败: Address already in use
+[2019-01-30 16:11:51] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 16:11:51] [ERROR] file:server.py - func:run - at line 52 - WebSocket服务器启动失败: Address already in use
+[2019-01-30 16:11:56] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 16:13:50] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 1 握手成功
+[2019-01-30 16:15:08] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 16:15:08] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 16:15:11] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 1 握手成功
+[2019-01-30 16:15:11] [INFO] file:websocket.py - func:run - at line 84 - WebSocket 1 连接建立成功
+[2019-01-30 16:15:11] [INFO] file:websocket.py - func:run - at line 91 - WebSocket 127.0.0.1 已连接
+[2019-01-30 16:15:20] [ERROR] file:protocol.py - func:_bytify_buffer - at line 205 - WebSocket Client信息解码错误: unexpected end of data
+[2019-01-30 16:15:20] [ERROR] file:protocol.py - func:_bytify_buffer - at line 205 - WebSocket Client信息解码错误: unexpected end of data
+[2019-01-30 16:15:20] [ERROR] file:websocket.py - func:run - at line 97 - WebSocket 1 8号控制帧已响应
+[2019-01-30 16:15:20] [INFO] file:websocket.py - func:run - at line 91 - WebSocket 127.0.0.1 已连接
+[2019-01-30 16:15:49] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 2 握手成功
+[2019-01-30 16:15:58] [INFO] file:websocket.py - func:run - at line 84 - WebSocket 2 连接建立成功
+[2019-01-30 16:15:58] [INFO] file:websocket.py - func:run - at line 91 - WebSocket 127.0.0.1 已连接
+[2019-01-30 16:16:13] [ERROR] file:protocol.py - func:_bytify_buffer - at line 205 - WebSocket Client信息解码错误: invalid continuation byte
+[2019-01-30 16:16:13] [ERROR] file:protocol.py - func:_bytify_buffer - at line 205 - WebSocket Client信息解码错误: invalid continuation byte
+[2019-01-30 16:16:13] [ERROR] file:websocket.py - func:run - at line 97 - WebSocket 2 8号控制帧已响应
+[2019-01-30 16:16:13] [INFO] file:websocket.py - func:run - at line 91 - WebSocket 127.0.0.1 已连接
+[2019-01-30 16:17:57] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 3 握手成功
+[2019-01-30 16:17:57] [INFO] file:websocket.py - func:run - at line 84 - WebSocket 3 连接建立成功
+[2019-01-30 16:17:57] [INFO] file:websocket.py - func:run - at line 91 - WebSocket 127.0.0.1 已连接
+[2019-01-30 16:18:06] [ERROR] file:protocol.py - func:_bytify_buffer - at line 205 - WebSocket Client信息解码错误: unexpected end of data
+[2019-01-30 16:18:06] [ERROR] file:protocol.py - func:_bytify_buffer - at line 205 - WebSocket Client信息解码错误: unexpected end of data
+[2019-01-30 16:18:06] [ERROR] file:websocket.py - func:run - at line 97 - WebSocket 3 8号控制帧已响应
+[2019-01-30 16:18:06] [INFO] file:websocket.py - func:run - at line 91 - WebSocket 127.0.0.1 已连接
+[2019-01-30 16:18:34] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 4 握手成功
+[2019-01-30 16:18:39] [INFO] file:websocket.py - func:run - at line 84 - WebSocket 4 连接建立成功
+[2019-01-30 16:18:39] [INFO] file:websocket.py - func:run - at line 91 - WebSocket 127.0.0.1 已连接
+[2019-01-30 16:20:15] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 16:20:15] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 16:21:14] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 1 握手成功
+[2019-01-30 16:21:16] [INFO] file:websocket.py - func:run - at line 80 - WebSocket 1 连接建立成功
+[2019-01-30 16:21:16] [INFO] file:websocket.py - func:run - at line 87 - WebSocket 127.0.0.1 已连接
+[2019-01-30 16:22:26] [ERROR] file:protocol.py - func:_bytify_buffer - at line 208 - WebSocket Client信息解码错误: unexpected end of data
+[2019-01-30 16:22:43] [ERROR] file:protocol.py - func:_bytify_buffer - at line 208 - WebSocket Client信息解码错误: unexpected end of data
+[2019-01-30 16:23:41] [ERROR] file:websocket.py - func:run - at line 93 - WebSocket 1 8号控制帧已响应
+[2019-01-30 16:24:06] [INFO] file:websocket.py - func:run - at line 87 - WebSocket 127.0.0.1 已连接
+[2019-01-30 16:34:57] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 16:34:57] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001
+[2019-01-30 16:35:01] [INFO] file:handshake.py - func:send_response - at line 103 - WebSocket 1 握手成功
+[2019-01-30 16:35:06] [INFO] file:websocket.py - func:run - at line 79 - WebSocket 1 连接建立成功
+[2019-01-30 16:35:06] [INFO] file:websocket.py - func:run - at line 86 - WebSocket 127.0.0.1 已连接
+[2019-01-30 16:35:28] [ERROR] file:protocol.py - func:_bytify_buffer - at line 208 - WebSocket Client信息解码错误: invalid continuation byte
+[2019-01-30 16:35:28] [ERROR] file:protocol.py - func:_bytify_buffer - at line 208 - WebSocket Client信息解码错误: invalid continuation byte
+[2019-01-30 16:35:28] [ERROR] file:websocket.py - func:run - at line 92 - WebSocket 1: opcode True 控制帧已响应
+[2019-01-30 16:37:01] [INFO] file:server.py - func:run - at line 42 - WebSocket服务器启动
+[2019-01-30 16:37:01] [INFO] file:server.py - func:run - at line 46 - WebSocket服务器开始监听 0.0.0.0:5001

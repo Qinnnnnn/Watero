@@ -23,7 +23,7 @@ class Log:
     }  # 日志级别关系映射
 
     def __init__(self, filename, level='INFO', interval=1, when='D', backCount=3,
-                 fmt='[%(asctime)s] [%(levelname)s] file:%(filename)s - func:%(funcName)s - at line %(lineno)s - %(message)s',
+                 fmt='[%(asctime)s] [%(levelname)s] file:%(filename)s - func:%(funcName)s - line:%(lineno)s - %(message)s',
                  datefmt='%Y-%m-%d %H:%M:%S'):
         """
         初始化
@@ -56,8 +56,8 @@ class Log:
 
 
 path = os.getcwd()
-log_debug = Log(path + '/log/debug.log', 'DEBUG')
-log_info = Log(path + '/log/info.log', 'INFO')
-log_warning = Log(path + '/log/warning.log', 'WARNING')
-log_error = Log(path + '/log/error.log', 'ERROR')
-log_critical = Log(path + '/log/critical.log', 'CRITICAL')
+log_debug = Log(path + '/logs/debug.log', 'DEBUG')
+log_info = Log(path + '/logs/info.log', 'INFO')
+log_warning = Log(path + '/logs/warning.log', 'WARNING')
+log_error = Log(path + '/logs/error.log', 'ERROR')
+log_critical = Log(path + '/logs/critical.log', 'CRITICAL')

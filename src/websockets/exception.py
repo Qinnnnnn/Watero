@@ -10,38 +10,59 @@ Note : WebSocket异常类
 """
 
 
-class InvalidHandshake(Exception):
+class HandshakeExceptionBase(Exception):
     """
     握手请求异常基类
     """
 
-    def __init__(self, message):
-        self.message = message
+    def __init__(self, msg='握手请求异常'):
+        self.msg = msg
 
 
-class InvalidFormat(InvalidHandshake):
+class HeaderFormatException(HandshakeExceptionBase):
     """
-    HTTP格式错误时引发异常
+    握手头部格式错误异常
     """
 
-    def __init__(self, message):
-        super(InvalidFormat, self).__init__(message)
+    def __init__(self):
+        msg = '握手请求格式异常'
+        super(HeaderFormatException, self).__init__(msg=msg)
 
 
-class InvalidHeader(InvalidHandshake):
+class HeaderFieldException(HandshakeExceptionBase):
     """
-    HTTP头部缺失或无效时引发异常
+    握手头部字段错误异常
     """
 
     def __init__(self, field, info):
-        message = "Invalid header {0}: {1}".format(field, info)
-        super(InvalidHeader, self).__init__(message)
+        msg = "握手请求字段异常 {0}: {1}".format(field, info)
+        super(HeaderFieldException, self).__init__(msg)
 
 
-class InvalidMultiHeader(InvalidHeader):
+class HeaderFieldMultiException(HeaderFieldException):
     """
-    HTTP头部重复时引发异常
+    握手头部重复异常
     """
 
-    def __init__(self, field, info='header repeat'):
-        super(InvalidMultiHeader, self).__init__(field, info)
+    def __init__(self, field):
+        info = '握手请求字段重复'
+        super(HeaderFieldMultiException, self).__init__(field, info)
+
+
+class SocketExceptionBase(Exception):
+    """
+    Socket异常基类
+    """
+
+    def __init__(self, msg='Socket异常'):
+        self.msg = msg
+
+
+class SocketCloseAbnormalException(SocketExceptionBase):
+    """
+    Socket异常关闭异常
+    """
+
+    def __init__(self):
+        msg = 'Socket异常关闭'
+        super(SocketCloseAbnormalException, self).__init__(msg=msg)
