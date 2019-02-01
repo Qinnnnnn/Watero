@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 """
-File : bit_mapping.py
+File : frame_field.py
 Author : Zerui Qin
 CreateDate : 2019-01-12 30:00:00
 LastModifiedDate : 2019-01-30 10:00:00
-Note : WebSocket数据帧位映射，用于映射数据帧中每位对应的含义
+Note : WebSocket数据帧字段位映射，用于映射数据帧中每字段值对应的含义
 """
 
 from enum import Enum, unique

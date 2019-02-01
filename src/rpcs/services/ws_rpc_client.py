@@ -22,7 +22,7 @@ def run():
     conn = grpc.insecure_channel(_HOST + ':' + _PORT)
     grpc_client = data_pipe_pb2_grpc.DataFlowStub(channel=conn)
     response = grpc_client.TransmitData(
-        data_pipe_pb2.TransmitRequest(index='00:00:00:00:00:00', msg='Hello agent'))
+        data_pipe_pb2.TransmitRequest(index='2', msg='Hello agent'))
     print(response.status)
 
 

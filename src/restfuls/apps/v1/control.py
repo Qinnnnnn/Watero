@@ -15,9 +15,9 @@ from flask_restful import marshal_with
 from flask_restful import reqparse
 
 from src.restfuls.apps.v1 import api
-from src.websockets.protocol import WebSocketProtocol
+from src.websockets.utils.protocol import WebSocketProtocol
 from utils import permission
-from utils.share_core import websocket_share_dict
+from src.websockets.utils.shared_core import websocket_share_dict
 
 
 class AgentControl(Resource):

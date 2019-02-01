@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 """
-File : protocol.py
+File : transmission.py
 Author : Zerui Qin
 CreateDate : 2018-12-12 10:00:00
 LastModifiedDate : 2018-12-12 10:00:00
-Note : WebSocket连接时协议交互所使用函数
+Note : WebSocket协议数据传输类
 WebSocket协议数据帧格式
   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
  +-+-+-+-+-------+-+-------------+-------------------------------+
@@ -28,24 +28,25 @@ WebSocket协议数据帧格式
 """
 
 import struct
+import time
 
 import six
 
-from src.websockets.bit_mapping import OPCODE
-from src.websockets.exception import SocketCloseAbnormalException
+from src.websockets.core.exception import SocketCloseAbnormalException, ConnMapGetSocketException
+from src.websockets.core.frame_field import OPCODE
 from utils.log import log_debug
 
 
-class WebSocketProtocol:
+class Transmission:
     """
-    WebSocket协议数据交互工具类
+    WebSocket协议数据传输类
     """
 
     def __init__(self, index, conn_map):
         """
         初始化
         :param index: int/str - Socket索引号
-        :param conn_map: dict - WebSocket Client连接映射表
+        :param conn_map: dict - WebSocket连接映射表
         """
         self.index = index
         self.conn_map = conn_map
@@ -105,11 +106,11 @@ class WebSocketProtocol:
         """
         opcode = frame_tuple[4]
         if opcode == OPCODE.CLOSE.value:  # opcode等于0x08为收到关闭控制帧
-            self.send_frame('', b'\x88')  # 响应CLOSE控制帧
+            self.send_frame(msg='', frame_frrro=b'\x88')  # 响应CLOSE控制帧
             self.remove_conn()  # 连接映射表中删除socket连接
             return True
         elif opcode == OPCODE.PING.value:  # opcode等于0x09为收到PING心跳包控制帧
-            self.send_frame('', b'\x8A')  # 响应PING心跳控制帧
+            self.send_frame(msg='', frame_frrro=b'\x8A')  # 响应PING心跳控制帧
             return True
         elif opcode == OPCODE.PONG.value:  # opcode等于0x0A为收到PONG心跳包控制帧
             return True
@@ -121,7 +122,7 @@ class WebSocketProtocol:
         发送WebSocket心跳包并等待回应
         :return: Boolean - 响应心跳包返回True否则返回False
         """
-        self.send_frame('', b'\x89')  # 发送PING心跳包
+        self.send_frame(msg='', frame_frrro=b'\x89')  # 发送PING心跳包
         try:
             rt_list = self.recv_frame()  # 接收WebSocket 数据帧
             if rt_list[4] == 10:  # WebSocket控制帧为PONG心跳包
@@ -138,7 +139,7 @@ class WebSocketProtocol:
         :return:
         """
         self.conn.close()  # 释放socket连接
-        del self.conn_map[self.index]
+        del self.conn_map[str(self.index)]
 
     def _get_socket_handle(self):
         """
@@ -146,9 +147,16 @@ class WebSocketProtocol:
         :return: Socket句柄
         """
         socket_handle = None
-        while socket_handle is None:
-            socket_handle = self.conn_map.get(self.index)
-        return socket_handle
+        for i in range(0, 10):  # 循环10次获取socket句柄
+            socket_handle = self.conn_map.get(str(self.index))
+            if socket_handle:
+                break  # 提前获取socket句柄结束循环
+            else:
+                time.sleep(0.1)  # 未获取socket句柄延迟0.1s
+        if socket_handle:
+            return socket_handle
+        else:
+            raise ConnMapGetSocketException()  # 连接映射表获取socket句柄异常
 
     # noinspection PyMethodMayBeStatic
     def _calc_frame_length(self, msg):
@@ -213,6 +221,6 @@ class WebSocketProtocol:
             return list(
                 [frame_fin, frame_rsv1, frame_rsv2, frame_rsv3, frame_opcode, frame_mask, frame_payload_length, res])
         except UnicodeDecodeError as exp:
-            log_debug.logger.error('WebSocket Client信息解码错误: {0}'.format(exp.reason))
+            log_debug.logger.error('WebSocket {0}: {1}'.format(self.index, exp.reason))
             return list([frame_fin, frame_rsv1, frame_rsv2, frame_rsv3, frame_opcode, frame_mask,
                          frame_payload_length, None])

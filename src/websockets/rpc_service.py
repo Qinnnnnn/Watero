@@ -9,13 +9,16 @@ LastModifiedDate : 2018-12-28 10:00:00
 Note : 提供WebSocket信息发送RPC服务
 """
 
+import threading
 import time
 from concurrent import futures
 
 import grpc
 
+import src.websockets.utils.shared_core as shared_core
 from src.rpcs.protos import data_pipe_pb2
 from src.rpcs.protos import data_pipe_pb2_grpc
+from utils.log import log_debug
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 _HOST = 'localhost'
@@ -27,11 +30,16 @@ class DataFlow(data_pipe_pb2_grpc.DataFlowServicer):
     def TransmitData(self, request, context):
         index = request.index
         msg = request.msg
-        print('{0}: {1}'.format(index, msg))
+        popcorn = shared_core.PopcornModel(index, msg)
+        shared_core.shared_queue.put(popcorn)
         return data_pipe_pb2.TransmitReply(status=0)
 
 
 def serve():
+    """
+    RPC服务启动函数
+    :return:
+    """
     grpc_server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     data_pipe_pb2_grpc.add_DataFlowServicer_to_server(DataFlow(), grpc_server)
     grpc_server.add_insecure_port(_HOST + ':' + _PORT)
@@ -43,5 +51,18 @@ def serve():
         grpc_server.stop(0)
 
 
-if __name__ == '__main__':
-    serve()
+class RpcService(threading.Thread):
+
+    def __init__(self):
+        """
+        初始化
+        """
+        super(RpcService, self).__init__()
+
+    def run(self):
+        """
+        线程启动函数
+        :return:
+        """
+        log_debug.logger.info('WebSocket RPC服务启动')
+        serve()

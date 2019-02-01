@@ -2,23 +2,23 @@
 # -*- coding: utf-8 -*-
 
 """
-File : websocket.py
+File : connection.py
 Author : Zerui Qin
 CreateDate : 2018-12-12 10:00:00
 LastModifiedDate : 2018-12-12 10:00:00
-Note : WebSocket建立连接后的连接对象
+Note : WebSocket连接被动响应线程
 """
 
 import threading
 
-from src.websockets.exception import HeaderFormatException, HeaderFieldMultiException, HeaderFieldException, \
+from src.websockets.core.exception import HeaderFormatException, HeaderFieldMultiException, HeaderFieldException, \
     SocketCloseAbnormalException
-from src.websockets.handshake import WebSocketHandshake
-from src.websockets.protocol import WebSocketProtocol
+from src.websockets.protocol.handshake import Handshake
+from src.websockets.protocol.transmission import Transmission
 from utils.log import log_debug
 
 
-class WebSocketConnection(threading.Thread):
+class Connection(threading.Thread):
     """
     WebSocket连接对象, 继承自threading.Thread类实现继承式多线程
     """
@@ -34,7 +34,7 @@ class WebSocketConnection(threading.Thread):
         :param debug: 是否为调试模式
         """
         # 初始化线程
-        super(WebSocketConnection, self).__init__()
+        super(Connection, self).__init__()
         # 初始化数据
         self.conn_map = conn_map
         self.conn = conn
@@ -56,9 +56,8 @@ class WebSocketConnection(threading.Thread):
         线程启动函数
         :return:
         """
-        ws_protocol = WebSocketProtocol(self.index, self.conn_map)
-        ws_handshake = WebSocketHandshake(self.index, self.conn_map)
-
+        ws_handshake = Handshake(self.index, self.conn_map)
+        ws_transmission = Transmission(self.index, self.conn_map)
         while True:  # 循环接收WebSocket Client消息
             if self.is_handshake is False:  # WebSocket未建立连接
                 self.recv_buffer = self.conn.recv(1024)  # 接收字节序列
@@ -71,26 +70,26 @@ class WebSocketConnection(threading.Thread):
                 ws_handshake.handshake_response()  # 发送WebSocket握手响应
                 log_debug.logger.info('WebSocket {0}: 握手成功'.format(self.index))
 
-                self.is_online = ws_protocol.send_heartbeat()  # 心跳测试
+                self.is_online = ws_transmission.send_heartbeat()  # 心跳测试
                 if self.is_online is True:
                     self.is_handshake = True  # WebSocket 连接成功建立，修改握手标志
                     log_debug.logger.info('WebSocket {0}: 连接建立成功'.format(self.index))
                 else:
-                    ws_protocol.remove_conn()  # WebSocket连接建立失败，删除连接映射表中的当前socket句柄
+                    ws_transmission.remove_conn()  # WebSocket连接建立失败，删除连接映射表中的当前socket句柄
                 self.recv_buffer_str = ''
             else:  # WebSocket已建立连接，响应控制帧
                 try:
-                    frame_tuple = ws_protocol.recv_frame()
+                    frame_tuple = ws_transmission.recv_frame()
                     self.recv_buffer = frame_tuple[-1]
-                    respond_flag = ws_protocol.respond_control_frame(frame_tuple)  # 响应控制帧
+                    respond_flag = ws_transmission.respond_control_frame(frame_tuple)  # 响应控制帧
                     if respond_flag:
-                        log_debug.logger.error(
+                        log_debug.logger.info(
                             'WebSocket {0}: opcode {1} 控制帧已响应'.format(self.index, frame_tuple[4]))
                     else:
                         log_debug.logger.error(
-                            'WebSocket {0}: opcode {1} 控制帧未响应'.format(self.index, frame_tuple[4]))
+                            'WebSocket {0}: opcode {1} 数据帧未响应'.format(self.index, frame_tuple[4]))
                 except SocketCloseAbnormalException as exp:  # WebSocket 异常关闭
-                    ws_protocol.remove_conn()  # 从连接映射表中删除句柄
+                    ws_transmission.remove_conn()  # 从连接映射表中删除句柄
                     log_debug.logger.error('WebSocket {0}: {1}'.format(self.index, exp.msg))
 
                 self.recv_buffer = b''
@@ -99,6 +98,6 @@ class WebSocketConnection(threading.Thread):
                 self.frame_header_length = 0
                 self.frame_payload_length = 0
 
-            if self.conn_map.get(self.index) is None:  # 连接映射表中已不存socket句柄
+            if self.conn_map.get(str(self.index)) is None:  # 连接映射表中已不存socket句柄
                 log_debug.logger.error('WebSocket {0}: 连接释放'.format(self.index))
                 break

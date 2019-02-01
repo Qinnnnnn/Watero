@@ -66,3 +66,22 @@ class SocketCloseAbnormalException(SocketExceptionBase):
     def __init__(self):
         msg = 'Socket异常关闭'
         super(SocketCloseAbnormalException, self).__init__(msg=msg)
+
+
+class ConnMapExceptionBase(Exception):
+    """
+    WebSocket连接映射表异常基类
+    """
+
+    def __init__(self, msg='WebSocket连接映射表异常'):
+        self.msg = msg
+
+
+class ConnMapGetSocketException(ConnMapExceptionBase):
+    """
+    WebSocket连接映射表获取socket句柄异常
+    """
+
+    def __init__(self):
+        msg = '连接映射表获取Socket句柄异常'
+        super(ConnMapGetSocketException, self).__init__(msg=msg)

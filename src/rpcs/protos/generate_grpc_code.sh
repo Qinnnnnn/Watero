@@ -1,5 +1,5 @@
+#!/usr/bin/env bash
 # 切换Python虚拟环境
-# source activate <Python Virtual Environment>
 source activate Watero
 
 # 将*.proto文件生成gRPC代码

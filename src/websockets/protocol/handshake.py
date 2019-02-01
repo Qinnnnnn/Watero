@@ -6,27 +6,26 @@ File : handshake.py
 Author : Clever Moon
 CreateDate : 2018-12-27 10:00:00
 LastModifiedDate : 2018-12-27 10:00:00
-Note : 处理WebSocket协议握手部分
+Note : WebSocket协议握手类
 参阅RFC 6455文档第4部分：http://tools.ietf.org/html/rfc6455#section-4
 """
 import base64
 import hashlib
 
-from src.websockets.exception import HeaderFormatException, HeaderFieldException, HeaderFieldMultiException
-from src.websockets.protocol import WebSocketProtocol
-from utils.log import log_debug
+from src.websockets.core.exception import HeaderFormatException, HeaderFieldException, HeaderFieldMultiException
+from src.websockets.protocol.transmission import Transmission
 
 
-class WebSocketHandshake:
+class Handshake:
     """
-    WebSocket协议握手请求类
+    WebSocket协议握手类
     """
 
     def __init__(self, index, conn_map):
         """
         初始化
         :param index: int/str - Socket索引号
-        :param conn_map: dictproxy - WebSocket Client连接映射表
+        :param conn_map: dict - WebSocket连接映射表
         """
         self.index = index
         self.conn_map = conn_map
@@ -96,7 +95,7 @@ class WebSocketHandshake:
         发送WebSocket握手响应
         :return:
         """
-        ws_protocol = WebSocketProtocol(self.index, self.conn_map)
+        ws_transmission = Transmission(self.index, self.conn_map)
         response = self._build_response()
         response_buffer = response.encode('utf-8')
-        ws_protocol.conn.send(response_buffer)
+        ws_transmission.conn.send(response_buffer)
