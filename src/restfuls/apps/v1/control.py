@@ -14,10 +14,9 @@ from flask_restful import fields
 from flask_restful import marshal_with
 from flask_restful import reqparse
 
+import src.rpcs.services.ws_rpc_client as ws_rpc_client
 from src.restfuls.apps.v1 import api
-from src.websockets.utils.protocol import WebSocketProtocol
 from utils import permission
-from src.websockets.utils.shared_core import websocket_share_dict
 
 
 class AgentControl(Resource):
@@ -32,8 +31,8 @@ class AgentControl(Resource):
         # 心跳包接口参数解析失败提示所有错误
         self.post_parser = reqparse.RequestParser(bundle_errors=True)
         self.post_parser.add_argument('mac_addr', required=True, type=str, help='mac_addr field required')
-        self.post_parser.add_argument('access_id', required=True, type=str, help='access_token field required')
-        self.post_parser.add_argument('access_secret', required=True, type=str, help='access_token field required')
+        self.post_parser.add_argument('access_id', required=True, type=str, help='access_id field required')
+        self.post_parser.add_argument('access_secret', required=True, type=str, help='access_secret field required')
         self.post_parser.add_argument('control', required=True, type=str, help='control field required')
         self.post_parser.add_argument('create_time', required=True, type=str, help='create_time field required')
 
@@ -64,8 +63,7 @@ class AgentControl(Resource):
                 'control': control,
                 'create_time': create_time
             }
-            wsp = WebSocketProtocol(mac_addr, websocket_share_dict)
-            wsp.send_frame(str(control_msg))
+            ws_rpc_client.run(index=mac_addr, msg=str(control_msg))
             return {'status': '1', 'state': 'success',
                     'message': {'info': 'Control information was delivered successfully'}}
 

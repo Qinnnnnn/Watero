@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 """
-File : ws_rpc_server.py
+File : ws_rpc_client.py
 Author : Zerui Qin
 CreateDate : 2018-12-28 10:00:00
 LastModifiedDate : 2018-12-28 10:00:00
-Note : 调用WebSocket发送信息RPC服务
+Note : WebSocket信息发送RPC客户端
 """
 
 import grpc
@@ -14,17 +14,17 @@ import grpc
 from src.rpcs.protos import data_pipe_pb2
 from src.rpcs.protos import data_pipe_pb2_grpc
 
-_HOST = 'localhost'
-_PORT = '6000'
+_HOST = 'localhost'  # RPC服务主机
+_PORT = '6000'  # RPC服务端口
 
 
-def run():
+def run(index, msg):
     conn = grpc.insecure_channel(_HOST + ':' + _PORT)
     grpc_client = data_pipe_pb2_grpc.DataFlowStub(channel=conn)
     response = grpc_client.TransmitData(
-        data_pipe_pb2.TransmitRequest(index='2', msg='Hello agent'))
+        data_pipe_pb2.TransmitRequest(index=index, msg=msg))
     print(response.status)
 
 
 if __name__ == '__main__':
-    run()
+    run(index='1', msg='Hello agent')

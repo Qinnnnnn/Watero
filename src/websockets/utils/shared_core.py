@@ -6,7 +6,7 @@ File : shared_core.py
 Author : Zerui Qin
 CreateDate : 2019-02-01 10:00:00
 LastModifiedDate : 2019-02-01 10:00:00
-Note : WebSocket RPC服务到WebSocket服务的数据共享类
+Note : WebSocket RPC服务到WebSocket服务的数据类
 """
 
 import queue
@@ -21,4 +21,4 @@ class PopcornModel:
         self.msg = msg
 
 
-shared_queue = queue.Queue()
+shared_queue = queue.Queue()  # WebSocket RPC服务到WebSocket服务共享队列

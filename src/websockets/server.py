@@ -14,7 +14,7 @@ import time
 
 from src.websockets.rpc_service import RpcService
 from src.websockets.connection import Connection
-from src.websockets.websocket_push import WebSocketPush
+from src.websockets.push_service import PushService
 from utils.log import log_debug
 
 
@@ -55,7 +55,7 @@ class WebSocketServer:
 
         rpc_service = RpcService()  # 实例化RPC服务线程
         rpc_service.start()  # 启动线程
-        websocket_push = WebSocketPush(conn_map=self.conn_map)  # 实例化WebSocket主动推送服务
+        websocket_push = PushService(conn_map=self.conn_map)  # 实例化WebSocket主动推送服务
         websocket_push.start()  # 启动线程
 
         while True:  # 监听端口，新连接开启子线程处理
