@@ -17,8 +17,7 @@ from flask_restful import reqparse
 from src.restfuls.apps.db_model import AgentRegisterLogs
 from src.restfuls.apps.db_model import db
 from src.restfuls.apps.v1 import api
-from utils import abort
-from utils import token_core
+from src.restfuls.utils import abort, token_core
 
 
 class AgentAuth(Resource):

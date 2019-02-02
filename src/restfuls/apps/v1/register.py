@@ -17,8 +17,8 @@ from flask_restful import reqparse
 from src.restfuls.apps.db_model import AgentRegisterLogs
 from src.restfuls.apps.db_model import db
 from src.restfuls.apps.v1 import api
-from utils import abort
-from utils.permission import Certify
+from src.restfuls.utils import abort
+from src.restfuls.utils.permission import Certify
 
 
 class AgentRegister(Resource):

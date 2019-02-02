@@ -16,7 +16,7 @@ from flask_restful import Resource
 
 from src.restfuls.apps.db_model import db
 from src.restfuls.apps.db_model import AgentResourceLogs
-from utils import permission
+from src.restfuls.utils import permission
 from src.restfuls.apps.v1 import api
 
 

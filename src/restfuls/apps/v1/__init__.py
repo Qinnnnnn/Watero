@@ -16,7 +16,7 @@ url_prefix = '/api/v1'
 api_bp = Blueprint('api', __name__, url_prefix=url_prefix)
 api = Api(api_bp)
 
-from src.restfuls.apps.v1.control import AgentControl
+from src.restfuls.apps.v1.push import AgentPush
 from src.restfuls.apps.v1.heartbeat import AgentHeartbeat
 from src.restfuls.apps.v1.register import AgentRegister
 from src.restfuls.apps.v1.resource import AgentResource

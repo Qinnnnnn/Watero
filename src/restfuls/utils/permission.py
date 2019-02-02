@@ -12,7 +12,7 @@ Note : 验证Agent合法性
 from src.restfuls.apps.db_model import AgentRegisterLogs
 from src.restfuls.apps.db_model import ClientRegisterLogs
 from src.restfuls.apps.db_model import db
-from utils import token_core
+from src.restfuls.utils import token_core
 
 
 class Certify:

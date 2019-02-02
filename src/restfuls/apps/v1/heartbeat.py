@@ -17,7 +17,7 @@ from flask_restful import reqparse
 from src.restfuls.apps.db_model import AgentHeartbeatLogs
 from src.restfuls.apps.db_model import db
 from src.restfuls.apps.v1 import api
-from utils import permission
+from src.restfuls.utils import permission
 
 
 class AgentHeartbeat(Resource):
