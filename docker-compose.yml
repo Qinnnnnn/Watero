@@ -2,7 +2,8 @@ version: "3"
 
 services:
   server:
-    build: .
+    build: Dockerfile
     container_name: watero_center
     ports:
       - "5000:5000"
+      - "5001:5001"

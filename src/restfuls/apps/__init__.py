@@ -41,7 +41,7 @@ def create_app():
     :return:
     """
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://qinzerui:Qz.ZXJ.1997@localhost:3306/watero'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://qinzerui:Qz.ZXJ.1997@rm-uf63lgd848335z49xyo.mysql.rds.aliyuncs.com:3306/watero'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # 不追踪数据库变化
     app.config['SQLALCHEMY_ECHO'] = False  # 不打印原始SQL语句
     register_extension(app)  # 注册插件
