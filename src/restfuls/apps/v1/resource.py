@@ -9,15 +9,16 @@ LastModifiedDate : 2018-12-07 10:00:00
 Note : 设备资源信息
 """
 
+from flask_restful import Resource
 from flask_restful import fields
 from flask_restful import marshal_with
 from flask_restful import reqparse
-from flask_restful import Resource
 
-from src.restfuls.apps.db_model import db
 from src.restfuls.apps.db_model import AgentResourceLogs
-from src.restfuls.utils import permission
+from src.restfuls.apps.db_model import db
 from src.restfuls.apps.v1 import api
+from src.restfuls.utils import abort
+from src.restfuls.utils.certify import Certify
 
 
 class AgentResource(Resource):
@@ -73,13 +74,17 @@ class AgentResource(Resource):
         boot_time = args.get('boot_time')  # boot_time参数
         create_time = args.get('create_time')  # create_time参数
 
-        if permission.Certify.certify_agent(mac_addr, access_token):
-            item = AgentResourceLogs(mac_addr, cpu_percent, cpu_count, cpu_freq_current,
-                                     cpu_freq_min, cpu_freq_max, total_memory, available_memory,
-                                     sensors_battery_percent, boot_time, create_time)
-            db.session.add(item)  # 新增设备资源信息记录
+        flag = Certify.certify_agent(mac_addr, access_token)
+        if flag > 0:
+            row = AgentResourceLogs(mac_addr, cpu_percent, cpu_count, cpu_freq_current,
+                                    cpu_freq_min, cpu_freq_max, total_memory, available_memory,
+                                    sensors_battery_percent, boot_time, create_time)
+            db.session.add(row)  # 新增设备资源信息记录
             db.session.commit()
-            return {'status': '1', 'state': 'success', 'message': {'info': 'Device resource record added'}}
+            return {'status': '1', 'state': 'success', 'message': {'info': 'Device resource added'}}
+        else:
+            msg = {'info': 'Access denied'}
+            abort.abort_with_msg(403, flag, 'error', **msg)
 
 
 api.add_resource(AgentResource, '/resource', endpoint='resource')

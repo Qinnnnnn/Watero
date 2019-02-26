@@ -13,12 +13,13 @@ from flask import Flask
 
 from src.restfuls.apps.extension import db
 from src.restfuls.apps.v1 import api_bp
+from src.restfuls.utils.get_config import get_config
 
 
 def register_extension(app):
     """
     注册插件
-    :param app: Flask app实例
+    :param app: Flask实例
     :return:
     """
     with app.app_context():
@@ -29,7 +30,7 @@ def register_extension(app):
 def register_blueprints(app):
     """
     注册蓝图
-    :param app: Flask app实例
+    :param app: Flask实例
     :return:
     """
     app.register_blueprint(api_bp)
@@ -40,8 +41,14 @@ def create_app():
     实例化Flask
     :return:
     """
+    config = get_config('remote_mysql')
+    db_type = config['db_type']
+    host = config['host']
+    port = config['port']
+    user = config['user']
+    password = config['password']
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://qinzerui:Qz.ZXJ.1997@rm-uf63lgd848335z49xyo.mysql.rds.aliyuncs.com:3306/watero'
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'{db_type}+pymysql://{user}:{password}@{host}:{port}/watero'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # 不追踪数据库变化
     app.config['SQLALCHEMY_ECHO'] = False  # 不打印原始SQL语句
     register_extension(app)  # 注册插件

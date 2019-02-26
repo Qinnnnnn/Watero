@@ -17,7 +17,8 @@ from flask_restful import reqparse
 from src.restfuls.apps.db_model import AgentHeartbeatLogs
 from src.restfuls.apps.db_model import db
 from src.restfuls.apps.v1 import api
-from src.restfuls.utils import permission
+from src.restfuls.utils import abort
+from src.restfuls.utils.certify import Certify
 
 
 class AgentHeartbeat(Resource):
@@ -54,16 +55,21 @@ class AgentHeartbeat(Resource):
         mac_addr = args.get('mac_addr')  # mac_addr参数
         access_token = args.get('access_token')  # token参数
         create_time = args.get('create_time')  # create_time参数
-        if permission.Certify.certify_agent(mac_addr, access_token):
-            hb = db.session.query(AgentHeartbeatLogs).filter_by(mac_addr=mac_addr).first()
-            if hb is None:
-                item = AgentHeartbeatLogs(mac_addr, create_time)
-                db.session.add(item)  # 新增心跳记录
+
+        flag = Certify.certify_agent(mac_addr, access_token)
+        if flag > 0:
+            rt = db.session.query(AgentHeartbeatLogs).filter_by(mac_addr=mac_addr).first()
+            if rt:
+                rt.create_time = create_time
                 db.session.commit()
             else:
-                hb.create_time = create_time
+                row = AgentHeartbeatLogs(mac_addr, create_time)
+                db.session.add(row)  # 新增心跳记录
                 db.session.commit()
-            return {'status': '1', 'state': 'success', 'message': {'info': 'Watero server is online'}}
+            return {'status': '1', 'state': 'success', 'message': {'info': 'Server online'}}
+        else:  # Client验证未通过
+            msg = {'info': 'Access denied'}
+            abort.abort_with_msg(403, flag, 'error', **msg)
 
 
 api.add_resource(AgentHeartbeat, '/heartbeat', endpoint='heartbeat')

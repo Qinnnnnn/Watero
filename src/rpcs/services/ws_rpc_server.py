@@ -6,7 +6,7 @@ File : ws_rpc_server.py
 Author : Zerui Qin
 CreateDate : 2018-12-28 10:00:00
 LastModifiedDate : 2018-12-28 10:00:00
-Note : 提供WebSocket信息发送RPC服务
+Note : RPC服务端测试脚本
 """
 
 import time

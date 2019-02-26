@@ -4,17 +4,18 @@ package helloworld;
 
 // 定义服务
 service Greeter {
-  // 定义函数，输入参数为HelloRequest，输出参数为HelloReply
-  rpc SayHello (HelloRequest) returns (HelloReply) {}
+    // 定义函数，输入参数为HelloRequest，输出参数为HelloReply
+    rpc SayHello (HelloRequest) returns (HelloReply) {
+    }
 }
 
 // 输入参数
 message HelloRequest {
-  string name = 1;
-  int32 age = 2;
+    string name = 1;
+    int32 age = 2;
 }
 
 // 输出参数
 message HelloReply {
-  string message = 1;
+    string message = 1;
 }

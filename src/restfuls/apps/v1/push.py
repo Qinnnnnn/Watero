@@ -16,7 +16,8 @@ from flask_restful import reqparse
 
 import src.rpcs.services.ws_rpc_client as ws_rpc_client
 from src.restfuls.apps.v1 import api
-from src.restfuls.utils import permission
+from src.restfuls.utils import abort
+from src.restfuls.utils.certify import Certify
 
 
 class AgentPush(Resource):
@@ -51,24 +52,28 @@ class AgentPush(Resource):
         """
         # 参数验证
         args = self.post_parser.parse_args()
-        access_id = args.get('access_id')  # access_id参数
-        access_secret = args.get('access_secret')  # access_secret参数
-        mac_addr = args.get('mac_addr')  # mac_addr参数
+        access_id = args.get('client_id')
+        access_secret = args.get('client_secret')
+        mac_addr = args.get('mac_addr')
         message = args.get('message')
-        create_time = args.get('create_time')  # create_time参数
-        if permission.Certify.certify_client(access_id, access_secret):  # App通过验证
+        create_time = args.get('create_time')
+        flag = Certify.certify_client(access_id, access_secret)
+        if flag > 0:  # Client验证通过
             control_msg = {
                 'mac_addr': mac_addr,
                 'message': message,
                 'create_time': create_time
             }
-            try:
-                ws_rpc_client.run(index=mac_addr, msg=str(control_msg))
+            flag = ws_rpc_client.run(index=mac_addr, msg=str(control_msg))
+            if flag == 1:
                 return {'status': '1', 'state': 'success',
-                        'message': {'info': 'Control information was delivered successfully'}}
-            except Exception as exp:
-                return {'status': '1', 'state': 'success',
-                        'message': {'info': 'Control information was delivered error'}}
+                        'message': {'info': 'Message delivered successfully'}}
+
+            return {'status': '1', 'state': 'success',
+                    'message': {'info': 'Message delivered error'}}
+        else:  # Client验证未通过
+            msg = {'info': 'Access denied'}
+            abort.abort_with_msg(403, flag, 'error', **msg)
 
 
-api.add_resource(AgentPush, '/control', endpoint='push')
+api.add_resource(AgentPush, '/push', endpoint='push')

@@ -6,7 +6,7 @@ File : ws_rpc_server.py
 Author : Zerui Qin
 CreateDate : 2018-12-28 10:00:00
 LastModifiedDate : 2018-12-28 10:00:00
-Note : WebSocket信息接收RPC服务
+Note : RPC服务端
 """
 
 import threading
@@ -41,7 +41,7 @@ class DataFlow(data_pipe_pb2_grpc.DataFlowServicer):
         msg = request.msg
         popcorn = shared_core.PopcornModel(index, msg)
         shared_core.shared_queue.put(popcorn)
-        return data_pipe_pb2.TransmitReply(status=0)
+        return data_pipe_pb2.TransmitReply(status=1)
 
 
 class RpcService(threading.Thread):

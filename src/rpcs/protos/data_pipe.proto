@@ -4,17 +4,18 @@ package datapipe;
 
 // 定义服务
 service DataFlow {
-  // 定义函数，输入参数为TransmitRequest，输出参数为TransmitReply
-  rpc TransmitData (TransmitRequest) returns (TransmitReply) {}
+    // 定义函数，输入参数为TransmitRequest，输出参数为TransmitReply
+    rpc TransmitData (TransmitRequest) returns (TransmitReply) {
+    }
 }
 
 // 输入参数
 message TransmitRequest {
-  string index = 1;
-  string msg = 2;
+    string index = 1;
+    string msg = 2;
 }
 
 // 输出参数
 message TransmitReply {
-  int32 status = 1;
+    int32 status = 1;
 }

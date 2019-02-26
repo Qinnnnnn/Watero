@@ -18,7 +18,7 @@ from src.restfuls.apps.db_model import AgentRegisterLogs
 from src.restfuls.apps.db_model import db
 from src.restfuls.apps.v1 import api
 from src.restfuls.utils import abort
-from src.restfuls.utils.permission import Certify
+from src.restfuls.utils.certify import Certify
 
 
 class AgentRegister(Resource):
@@ -41,7 +41,7 @@ class AgentRegister(Resource):
         )
     }
 
-    PAGE_SIZE = 20  # 每页数据数量
+    _PAGE_SIZE = 20  # 每页数据数量
 
     def __init__(self):
         """
@@ -74,15 +74,15 @@ class AgentRegister(Resource):
         args = self.get_parser.parse_args()  # 解析参数
         client_id = args.get('client_id')
         client_secret = args.get('client_secret')
-        PAGE_INDEX = args.get('page')  # 页数索引
+        _PAGE_SIZE = args.get('page')  # 页数索引
 
-        flag_status = Certify.certify_client(client_id, client_secret)  # Client验证
-        if flag_status[0]:  # Client验证通过，获取Agent注册记录
-            rt = db.session.query(AgentRegisterLogs).limit(self.PAGE_SIZE).offset((PAGE_INDEX - 1) * self.PAGE_SIZE)
+        flag = Certify.certify_client(client_id, client_secret)  # Client验证
+        if flag > 0:  # Client验证通过，获取Agent注册记录
+            rt = db.session.query(AgentRegisterLogs).limit(self._PAGE_SIZE).offset((_PAGE_SIZE - 1) * self._PAGE_SIZE)
             return {'status': '1', 'state': 'success', 'message': rt}
         else:
             msg = {'info': 'Access denied'}
-            abort.abort_with_msg(403, flag_status[1], 'error', **msg)
+            abort.abort_with_msg(403, flag, 'error', **msg)
 
     @marshal_with(common_resp_fields)
     def post(self):
@@ -96,20 +96,20 @@ class AgentRegister(Resource):
         mac_addr = args.get('mac_addr')
         status = args.get('status')
 
-        flag_status = Certify.certify_client(client_id, client_secret)  # Client验证
-        if flag_status[0]:  # Client验证通过，添加Agent注册记录
+        flag = Certify.certify_client(client_id, client_secret)  # Client验证
+        if flag > 0:  # Client验证通过
             rt = db.session.query(AgentRegisterLogs).filter(AgentRegisterLogs.mac_addr == mac_addr).first()
-            if rt:
-                msg = {'info': 'Add denied'}
-                abort.abort_with_msg(403, -4, 'error', **msg)
-            else:
-                record = AgentRegisterLogs(mac_addr, None, status)
-                db.session.add(record)
+            if rt:  # Agent在白名单
+                row = AgentRegisterLogs(mac_addr, None, status)
+                db.session.add(row)
                 db.session.commit()
                 return {'status': '1', 'state': 'success', 'message': {'info': 'Agent added'}}
-        else:
+            else:  # Agent未在白名单
+                msg = {'info': 'Add denied'}
+                abort.abort_with_msg(403, -4, 'error', **msg)
+        else:  # Client验证未通过
             msg = {'info': 'Access denied'}
-            abort.abort_with_msg(403, flag_status[1], 'error', **msg)
+            abort.abort_with_msg(403, flag, 'error', **msg)
 
     @marshal_with(common_resp_fields)
     def put(self):
@@ -123,19 +123,19 @@ class AgentRegister(Resource):
         mac_addr = args.get('mac_addr')
         status = args.get('status')
 
-        flag_status = Certify.certify_client(client_id, client_secret)  # Client验证
-        if flag_status[0]:  # Client验证通过，修改Agent注册记录
+        flag = Certify.certify_client(client_id, client_secret)  # Client验证
+        if flag > 0:  # Client验证通过
             rt = db.session.query(AgentRegisterLogs).filter(AgentRegisterLogs.mac_addr == mac_addr).first()
-            if rt:
+            if rt:  # Agent在白名单
                 rt.status = status
                 db.session.commit()
                 return {'status': '1', 'state': 'success', 'message': {'info': 'Agent updated'}}
-            else:
+            else:  # Agent未在白名单
                 msg = {'info': 'Update denied'}
-                abort.abort_with_msg(403, -5, 'error', **msg)
-        else:
+                abort.abort_with_msg(403, -4, 'error', **msg)
+        else:  # Client验证未通过
             msg = {'info': 'Access denied'}
-            abort.abort_with_msg(403, flag_status[1], 'error', **msg)
+            abort.abort_with_msg(403, flag, 'error', **msg)
 
     @marshal_with(common_resp_fields)
     def delete(self):
@@ -148,19 +148,19 @@ class AgentRegister(Resource):
         client_secret = args.get('client_secret')
         mac_addr = args.get('mac_addr')
 
-        flag_status = Certify.certify_client(client_id, client_secret)  # Client验证
-        if flag_status[0]:  # Client验证通过，删除Agent注册记录
+        flag = Certify.certify_client(client_id, client_secret)  # Client验证
+        if flag > 0:  # Client验证通过
             rt = db.session.query(AgentRegisterLogs).filter(AgentRegisterLogs.mac_addr == mac_addr).first()
-            if rt:
+            if rt:  # Agent在白名单
                 db.session.delete(rt)
                 db.session.commit()
                 return {'status': '1', 'state': 'success', 'message': {'info': 'Agent deleted'}}
-            else:
+            else:  # Agent未在白名单
                 msg = {'info': 'Delete denied'}
-                abort.abort_with_msg(403, -6, 'error', **msg)
-        else:
+                abort.abort_with_msg(403, -4, 'error', **msg)
+        else:  # Client验证未通过
             msg = {'info': 'Access denied'}
-            abort.abort_with_msg(403, flag_status[1], 'error', **msg)
+            abort.abort_with_msg(403, flag, 'error', **msg)
 
 
 api.add_resource(AgentRegister, '/register', endpoint='register')
