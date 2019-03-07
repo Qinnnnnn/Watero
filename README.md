@@ -8,7 +8,7 @@
 
 ## 系统架构
 
-![image](https://wx3.sinaimg.cn/large/a1bd622cgy1fyl9bqj3asj20s50ntaat.jpg)
+![image](http://ww1.sinaimg.cn/mw690/a1bd622cgy1g0uphyspbzj20hq0kmt95.jpg)
 * 基于Flask实现RESTful API服务，作为单向数据通道
 * 基于Socket TCP实现WebSocket服务，遵守IETF RFC 6455协议规范，作为双向数据通道
 * RESTful API服务和WebSocket服务数据互通
