@@ -29,8 +29,4 @@ def run(index, msg):
     grpc_client = data_pipe_pb2_grpc.DataFlowStub(channel=conn)
     response = grpc_client.TransmitData(
         data_pipe_pb2.TransmitRequest(index=index, msg=msg))
-    print(response.status)
-
-
-if __name__ == '__main__':
-    run(index='1', msg='Hello agent')
+    return response.status

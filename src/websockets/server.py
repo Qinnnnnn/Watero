@@ -41,27 +41,30 @@ class WebSocketServer:
         :return:
         """
 
-        log_debug.logger.info('WebSocket服务器启动')
+        log_debug.logger.info('WebSocket 服务启动')
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # 创建socket句柄
         while True:  # 初始化socket
-            log_debug.logger.info('WebSocket服务器开始监听 {0}:{1}'.format(host, port))
+            log_debug.logger.info(f'WebSocket 服务监听 {host}:{port}')
             try:
                 self.socket.bind((host, port))  # Socket绑定到IP地址和端口
                 self.socket.listen(5)  # 设置socket最大TCP连接挂起数
                 break  # Socket绑定成功结束循环
-            except OSError as exp:  # 需绑定的端口不可用
-                log_debug.logger.error('WebSocket服务器启动失败: {0}'.format(exp.strerror))
+            except OSError as exp:
+                log_debug.logger.error(f'WebSocket 服务启动失败: {exp.strerror}')
                 time.sleep(5)
 
+        log_debug.logger.info('WebSocket RPC 服务启动')
         rpc_service = RpcService()  # 实例化RPC服务线程
         rpc_service.start()  # 启动线程
-        websocket_push = PushService(conn_map=self.conn_map)  # 实例化WebSocket主动推送服务
-        websocket_push.start()  # 启动线程
+
+        log_debug.logger.info('WebSocket Push 服务启动')
+        push_service = PushService(conn_map=self.conn_map)  # 实例化WebSocket主动推送服务
+        push_service.start()  # 启动线程
 
         while True:  # 监听端口，新连接开启子线程处理
-            conn, address = self.socket.accept()  # 服务器响应请求，返回WebSocket Client的socket句柄和地址
-            websocket = Connection(conn_map=self.conn_map, index=self.index, conn=conn, host=address[0],
-                                   remote=address, debug=debug)  # 实例化WebSocket被动响应线程
-            websocket.start()  # 启动线程
+            conn, address = self.socket.accept()  # 服务器响应请求，返回WebSocket Client的socket句柄和主机地址
+            connection = Connection(conn_map=self.conn_map, index=self.index, conn=conn, host=address[0],
+                                    remote=address, debug=debug)  # 实例化WebSocket被动响应线程
+            connection.start()  # 启动线程
             self.conn_map[str(self.index)] = conn  # Socket句柄写入WebSocket连接映射表
             self.index += 1

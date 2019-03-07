@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 """
-File : ws_rpc_server.py
+File : rpc_server.py
 Author : Zerui Qin
 CreateDate : 2018-12-28 10:00:00
 LastModifiedDate : 2018-12-28 10:00:00
-Note : RPC服务端
+Note : RPC Server
 """
 
 import threading
@@ -18,7 +18,6 @@ import grpc
 import src.websockets.utils.shared_core as shared_core
 from src.rpcs.protos import data_pipe_pb2
 from src.rpcs.protos import data_pipe_pb2_grpc
-from utils.log import log_debug
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 _HOST = 'localhost'  # RPC服务主机
@@ -60,7 +59,6 @@ class RpcService(threading.Thread):
         线程启动函数
         :return:
         """
-        log_debug.logger.info('WebSocket RPC服务启动')
         self.serve()
 
     # noinspection PyMethodMayBeStatic

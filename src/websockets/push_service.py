@@ -35,17 +35,13 @@ class PushService(threading.Thread):
         线程启动函数
         :return:
         """
-        log_debug.logger.info('WebSocket主动推送服务启动')
         while True:  # 循环读取共享队列中的数据
-            if shared_core.shared_queue.empty():  # 不存在数据
-                pass
-            else:  # 存在数据
-                popcorn = shared_core.shared_queue.get()  # 共享队列弹出数据
-                index = popcorn.index
-                msg = popcorn.msg
-                try:
-                    ws_transmission = Transmission(index=index, conn_map=self.conn_map)
-                    ws_transmission.send_frame(msg=msg)
-                    log_debug.logger.info('WebSocket {0}: {1} 信息下发成功'.format(index, msg))
-                except ConnMapGetSocketException as exp:
-                    log_debug.logger.info('WebSocket {0}: {1} 信息下发失败'.format(index, exp.msg))
+            popcorn = shared_core.shared_queue.get()  # 阻塞等待队列数据
+            index = popcorn.index
+            msg = popcorn.msg
+            try:
+                ws_transmission = Transmission(index=index, conn_map=self.conn_map)
+                ws_transmission.send_frame(msg=msg)
+                log_debug.logger.info(f'WebSocket {index}: 信息下发成功')
+            except ConnMapGetSocketException as exp:
+                log_debug.logger.info(f'WebSocket {index}: 信息下发失败')

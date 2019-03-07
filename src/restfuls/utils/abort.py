@@ -6,7 +6,7 @@ File : abort.py
 Author : Zerui Qin
 CreateDate : 2018-12-07 10:00:00
 LastModifiedDate : 2018-12-07 10:00:00
-Note : 服务拒绝方法封装
+Note : 服务拒绝方法
 """
 
 from flask_restful import abort
