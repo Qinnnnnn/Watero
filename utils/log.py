@@ -23,7 +23,7 @@ class Log:
     }  # 日志级别关系映射
 
     def __init__(self, filename, level='INFO', interval=1, when='D', backCount=3,
-                 fmt='[%(asctime)s] [%(levelname)s] file:%(filename)s - line:%(lineno)s - %(message)s',
+                 fmt='[%(asctime)s] [%(levelname)s] %(filename)s : %(lineno)s - %(message)s',
                  datefmt='%Y-%m-%d %H:%M:%S'):
         """
         初始化

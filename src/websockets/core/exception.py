@@ -35,7 +35,7 @@ class HeaderFieldException(HandshakeExceptionBase):
     """
 
     def __init__(self, field, info):
-        msg = "握手请求字段异常 {0}: {1}".format(field, info)
+        msg = f'握手请求字段异常 {field}: {info}'
         super(HeaderFieldException, self).__init__(msg)
 
 

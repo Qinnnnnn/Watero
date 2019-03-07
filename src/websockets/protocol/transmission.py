@@ -130,7 +130,7 @@ class Transmission:
             else:  # WebSocket控制帧不为PONG心跳包
                 return False
         except SocketCloseAbnormalException as exp:  # 捕获socket句柄异常关闭异常
-            log_debug.logger.error('WebSocket {0} {1}'.format(self.index, exp.msg))
+            log_debug.logger.error(f'WebSocket {self.index} {exp.msg}')
             return False
 
     def remove_conn(self):
@@ -221,6 +221,6 @@ class Transmission:
             return list(
                 [frame_fin, frame_rsv1, frame_rsv2, frame_rsv3, frame_opcode, frame_mask, frame_payload_length, res])
         except UnicodeDecodeError as exp:
-            log_debug.logger.error('WebSocket {0}: {1}'.format(self.index, exp.reason))
+            log_debug.logger.error(f'WebSocket {self.index}: {exp.reason}')
             return list([frame_fin, frame_rsv1, frame_rsv2, frame_rsv3, frame_opcode, frame_mask,
                          frame_payload_length, None])

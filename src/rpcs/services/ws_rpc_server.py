@@ -27,7 +27,7 @@ class DataFlow(data_pipe_pb2_grpc.DataFlowServicer):
     def TransmitData(self, request, context):
         index = request.index
         msg = request.msg
-        print('{0}: {1}'.format(index, msg))
+        print(f'{index}: {msg}')
         return data_pipe_pb2.TransmitReply(status=0)
 
 

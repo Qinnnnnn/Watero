@@ -35,7 +35,7 @@ class WebSocketServer:
     def run(self, host, port, debug=False):
         """
         启动WebSocket服务器
-        :param host: 服务器主机地址
+        :param host: 服务器IP地址
         :param port: 服务器主机端口
         :param debug: 是否为调试模式
         :return:
@@ -46,23 +46,23 @@ class WebSocketServer:
         while True:  # 初始化socket
             log_debug.logger.info(f'WebSocket 服务监听 {host}:{port}')
             try:
-                self.socket.bind((host, port))  # Socket绑定到IP地址和端口
+                self.socket.bind((host, port))  # Socket绑定IP地址和端口
                 self.socket.listen(5)  # 设置socket最大TCP连接挂起数
                 break  # Socket绑定成功结束循环
             except OSError as exp:
                 log_debug.logger.error(f'WebSocket 服务启动失败: {exp.strerror}')
                 time.sleep(5)
 
-        log_debug.logger.info('WebSocket RPC 服务启动')
+        log_debug.logger.info('RPC 服务启动')
         rpc_service = RpcService()  # 实例化RPC服务线程
         rpc_service.start()  # 启动线程
 
-        log_debug.logger.info('WebSocket Push 服务启动')
+        log_debug.logger.info('Push 服务启动')
         push_service = PushService(conn_map=self.conn_map)  # 实例化WebSocket主动推送服务
         push_service.start()  # 启动线程
 
         while True:  # 监听端口，新连接开启子线程处理
-            conn, address = self.socket.accept()  # 服务器响应请求，返回WebSocket Client的socket句柄和主机地址
+            conn, address = self.socket.accept()  # 服务器响应请求，返回socket句柄和主机地址
             connection = Connection(conn_map=self.conn_map, index=self.index, conn=conn, host=address[0],
                                     remote=address, debug=debug)  # 实例化WebSocket被动响应线程
             connection.start()  # 启动线程

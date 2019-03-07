@@ -27,7 +27,7 @@ class Greeter(hello_world_pb2_grpc.GreeterServicer):
     def SayHello(self, request, context):
         name = request.name
         age = request.age
-        return hello_world_pb2.HelloReply(message='Hello {0}, happy {1}th birthday!'.format(name, age))
+        return hello_world_pb2.HelloReply(message=f'Hello {name}, happy {age}th birthday!')
 
 
 def serve():

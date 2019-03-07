@@ -42,6 +42,8 @@ class PushService(threading.Thread):
             try:
                 ws_transmission = Transmission(index=index, conn_map=self.conn_map)
                 ws_transmission.send_frame(msg=msg)
-                log_debug.logger.info(f'WebSocket {index}: 信息下发成功')
-            except ConnMapGetSocketException as exp:
-                log_debug.logger.info(f'WebSocket {index}: 信息下发失败')
+                log_debug.logger.info(f'WebSocket {index}: 信息推送成功')
+            except ConnMapGetSocketException:
+                log_debug.logger.error(f'WebSocket {index}: 连接不存在')
+            except Exception:
+                log_debug.logger.error(f'WebSocket {index}: 信息推送失败')
