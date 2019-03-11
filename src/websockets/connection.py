@@ -26,19 +26,19 @@ class Connection(threading.Thread):
     def __init__(self, conn_map, index, conn, host, remote, debug=False):
         """
         初始化
-        :param conn_map: 连接映射
-        :param index: 当前WebSocket连接的socket标识
-        :param conn: 当前WebSocket的socket句柄
-        :param host: 当前WebSocket连接的远程主机地址
-        :param remote: 当前WebSocket连接的远程主机地址 + 端口号
+        :param conn_map: 连接映射表
+        :param index: WebSocket连接对应的socket索引号
+        :param conn: WebSocket连接对应的socket句柄
+        :param host: WebSocket连接对应的的远程主机地址
+        :param remote: WebSocket连接对应的远程主机地址 + 端口号
         :param debug: 是否为调试模式
         """
         # 初始化线程
         super(Connection, self).__init__()
         # 初始化数据
         self.conn_map = conn_map
-        self.conn = conn
         self.index = index
+        self.conn = conn
         self.host = host
         self.remote = remote
         self.debug = debug
@@ -57,7 +57,8 @@ class Connection(threading.Thread):
         :return:
         """
         ws_handshake = Handshake(self.index, self.conn_map)
-        ws_transmission = Transmission(self.index, self.conn_map)
+        ws_transmission = Transmission(self.conn_map)
+        ws_transmission.init_socket(index=self.index)
         while True:  # 循环接收WebSocket Client消息
             if self.is_handshake is False:  # WebSocket未建立连接
                 self.recv_buffer = self.conn.recv(1024)  # 接收字节序列
@@ -79,7 +80,7 @@ class Connection(threading.Thread):
                 self.recv_buffer_str = ''
             else:  # WebSocket已建立连接，响应控制帧
                 try:
-                    frame_tuple = ws_transmission.recv_frame()
+                    frame_tuple = ws_transmission.recv()
                     self.recv_buffer = frame_tuple[-1]
                     respond_flag = ws_transmission.respond_control_frame(frame_tuple)  # 响应控制帧
                     if respond_flag:
@@ -97,5 +98,5 @@ class Connection(threading.Thread):
                 self.frame_payload_length = 0
 
             if self.conn_map.get(str(self.index)) is None:  # 连接映射表中已不存socket句柄
-                log_debug.logger.error(f'WebSocket {self.index}: 连接释放')
+                log_debug.logger.info(f'WebSocket {self.index}: 连接释放')
                 break

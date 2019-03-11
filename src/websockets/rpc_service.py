@@ -15,7 +15,7 @@ from concurrent import futures
 
 import grpc
 
-import src.websockets.utils.shared_core as shared_core
+import utils.shared_core as shared_core
 from src.rpcs.protos import data_pipe_pb2
 from src.rpcs.protos import data_pipe_pb2_grpc
 
@@ -31,7 +31,7 @@ class DataFlow(data_pipe_pb2_grpc.DataFlowServicer):
 
     def TransmitData(self, request, context):
         """
-        RPC数据接收处理函数
+        RPC服务处理函数，接收到RPC数据写入共享队列
         :param request:
         :param context:
         :return:

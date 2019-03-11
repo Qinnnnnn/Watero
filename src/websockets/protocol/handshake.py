@@ -29,12 +29,72 @@ class Handshake:
         """
         self.index = index
         self.conn_map = conn_map
-
+        self.ws_transmission = Transmission(conn_map=self.conn_map)
         self.GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'  # Magic value
-        self.header_dict = dict()
-        self.key = ''
         self.upgrade = ''
+        self.connection = ''
+        self.key = ''
         self.version = ''
+
+        # noinspection PyMethodMayBeStatic
+
+    def handshake_request_check(self, msg):
+        """
+        检查WebSocket握手请求
+        :param msg: str - WebSocket握手请求
+        :return:
+        """
+        header_dict = dict()
+        if msg.find('\r\n\r\n') == -1:  # 不存在\r\n\r\n分割符号
+            raise HeaderFormatException()
+        else:
+            header, payload_data = msg.split('\r\n\r\n', 1)
+            for item in header.split('\r\n')[1:]:  # 丢弃HTTP请求header域第一行数据
+                key, value = item.split(': ', 1)  # 逐行解析request header信息
+                if key not in header_dict.keys():  # 字段未重复
+                    header_dict[key] = value
+                else:  # 字段重复
+                    raise HeaderFieldMultiException(key)
+
+            self.upgrade = header_dict.get('Upgrade').lower()
+            self.connection = header_dict.get('Connection').lower()
+            self.key = header_dict.get('Sec-WebSocket-Key')
+            self.version = header_dict.get('Sec-WebSocket-Version')
+
+            if self.upgrade is None:  # Upgrade字段不存在
+                raise HeaderFieldException('Upgrade', '字段缺失')
+            elif self.upgrade == '':  # Upgrade字段为空
+                raise HeaderFieldException('Upgrade', '字段为空')
+            elif self.upgrade != 'websocket':  # Upgrade字段值不等于websocket
+                raise HeaderFieldException('Upgrade', '值错误')
+
+            if self.connection is None:  # Connection字段不存在
+                raise HeaderFieldException('Sec-WebSocket-Version', '字段缺失')
+            elif self.connection == '':  # Connection字段为空
+                raise HeaderFieldException('Sec-WebSocket-Version', '字段为空')
+            elif self.connection != 'upgrade':  # Connection字段值不等于Upgrade
+                raise HeaderFieldException('Sec-WebSocket-Version', '值错误')
+
+            if self.key is None:  # Sec-WebSocket-Key字段缺失
+                raise HeaderFieldException('Sec-WebSocket-Key', '字段缺失')
+            elif self.key == '':  # Sec-WebSocket-Key字段为空
+                raise HeaderFieldException('Sec-WebSocket-Key', '字段为空')
+
+            if self.version is None:  # Sec-WebSocket-Version字段不存在
+                raise HeaderFieldException('Sec-WebSocket-Version', '字段缺失')
+            elif self.version == '':  # Sec-WebSocket-Version字段为空
+                raise HeaderFieldException('Sec-WebSocket-Version', '字段为空')
+            elif self.version != '13':  # Sec-WebSocket-Version字段值不等于13
+                raise HeaderFieldException('Sec-WebSocket-Version', '值错误')
+
+    def handshake_response(self):
+        """
+        发送WebSocket握手响应
+        :return:
+        """
+        response_buffer = self._build_response().encode('utf-8')  # 构造服务端握手响应报文
+        self.ws_transmission.init_socket(index=self.index)
+        self.ws_transmission.conn.send(response_buffer)
 
     def _accept_request(self, key):
         """
@@ -56,46 +116,3 @@ class Handshake:
                    'Upgrade: websocket\r\n' \
                    'Sec-WebSocket-Accept: ' + sec_websocket_accept + '\r\n\r\n'
         return response
-
-    def handshake_request_check(self, msg):
-        """
-        检查WebSocket握手请求
-        :param msg: str - WebSocket握手请求
-        :return:
-        """
-        if msg.find('\r\n\r\n') == -1:  # 不存在\r\n\r\n分割符号
-            raise HeaderFormatException()
-        else:
-            header, payload_data = msg.split('\r\n\r\n', 1)
-            for item in header.split('\r\n')[1:]:  # 丢弃HTTP请求header域第一行数据
-                key, value = item.split(': ', 1)  # 逐行解析request header信息
-                if key not in self.header_dict.keys():  # 字段未重复
-                    self.header_dict[key] = value
-                else:  # 字段重复
-                    raise HeaderFieldMultiException(key)
-
-            self.key = self.header_dict.get('Sec-WebSocket-Key')
-            self.version = self.header_dict.get('Sec-WebSocket-Version')
-            self.upgrade = self.header_dict.get('Upgrade')
-
-            if self.key is None:  # Sec-WebSocket-Key字段缺失
-                raise HeaderFieldException('Sec-WebSocket-Key', '字段缺失')
-            elif self.key == '':  # Sec-WebSocket-Key字段为空
-                raise HeaderFieldException('Sec-WebSocket-Key', '字段为空')
-
-            if self.version is None:  # Sec-WebSocket-Version字段不存在
-                raise HeaderFieldException('Sec-WebSocket-Version', '字段缺失')
-            elif self.version == '':  # Sec-WebSocket-Version字段为空
-                raise HeaderFieldException('Sec-WebSocket-Version', '字段为空')
-            elif self.version != '13':  # Sec-WebSocket-Version字段值不等于13
-                raise HeaderFieldException('Sec-WebSocket-Version', '版本错误')
-
-    def handshake_response(self):
-        """
-        发送WebSocket握手响应
-        :return:
-        """
-        ws_transmission = Transmission(self.index, self.conn_map)
-        response = self._build_response()
-        response_buffer = response.encode('utf-8')
-        ws_transmission.conn.send(response_buffer)
