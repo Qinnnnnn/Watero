@@ -5,7 +5,6 @@
 File : heartbeat.py
 Author : Zerui Qin
 CreateDate : 2018-11-18 10:00:00
-LastModifiedDate : 2018-11-18 10:00:00
 Note : Agent心跳包接口
 """
 
@@ -16,7 +15,6 @@ from flask_restful import reqparse
 
 from src.restfuls.apps.db_model import AgentHeartbeatLogs
 from src.restfuls.apps.db_model import db
-from src.restfuls.apps.v1 import api
 from src.restfuls.utils import abort
 from src.restfuls.utils.certify import Certify
 
@@ -52,9 +50,9 @@ class AgentHeartbeat(Resource):
         """
         # 参数验证
         args = self.post_parser.parse_args()
-        mac_addr = args.get('mac_addr')  # mac_addr参数
-        access_token = args.get('access_token')  # token参数
-        create_time = args.get('create_time')  # create_time参数
+        mac_addr = args.get('mac_addr')
+        access_token = args.get('access_token')
+        create_time = args.get('create_time')
 
         flag = Certify.certify_agent(mac_addr, access_token)
         if flag > 0:
@@ -70,6 +68,3 @@ class AgentHeartbeat(Resource):
         else:  # Client验证未通过
             msg = {'info': 'Access denied'}
             abort.abort_with_msg(403, flag, 'error', **msg)
-
-
-api.add_resource(AgentHeartbeat, '/heartbeat', endpoint='heartbeat')

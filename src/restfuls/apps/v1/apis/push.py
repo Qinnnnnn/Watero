@@ -15,7 +15,6 @@ from flask_restful import marshal_with
 from flask_restful import reqparse
 
 import src.rpcs.services.ws_rpc_client as ws_rpc_client
-from src.restfuls.apps.v1 import api
 from src.restfuls.utils import abort
 from src.restfuls.utils.certify import Certify
 
@@ -74,6 +73,3 @@ class AgentPush(Resource):
         else:  # Client验证未通过
             msg = {'info': 'Access denied'}
             abort.abort_with_msg(403, flag, 'error', **msg)
-
-
-api.add_resource(AgentPush, '/push', endpoint='push')

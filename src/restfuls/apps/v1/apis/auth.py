@@ -16,7 +16,6 @@ from flask_restful import reqparse
 
 from src.restfuls.apps.db_model import AgentRegisterLogs
 from src.restfuls.apps.db_model import db
-from src.restfuls.apps.v1 import api
 from src.restfuls.utils import abort
 from src.restfuls.utils.certify import Certify
 
@@ -38,7 +37,7 @@ class AgentAuth(Resource):
         初始化
         """
         self.get_parser = reqparse.RequestParser()
-        self.get_parser.add_argument('mac_addr', required=True, type=str, help='mac_addr field required')
+        self.get_parser.add_argument('mac_addr', required=True, type=str, help='mac_addr required')
 
     @marshal_with(get_resp_fields)
     def get(self):
@@ -50,17 +49,10 @@ class AgentAuth(Resource):
         args = self.get_parser.parse_args()
         mac_addr = args.get('mac_addr')
         rt = db.session.query(AgentRegisterLogs).filter(AgentRegisterLogs.mac_addr == mac_addr).first()
-        if rt:  # Agent在白名单
-            if rt.status == 1:  # Agent可用
-                rt.access_token = Certify.generate_token(mac_addr)
-                db.session.commit()
-                return {'status': 1, 'state': 'success', 'message': rt}
-            else:  # Agent不可用
-                msg = {'info': 'Access denied'}
-                abort.abort_with_msg(403, -2, 'error', **msg)
-        else:  # Agent未在白名单
+        if rt and rt.status == 1:
+            rt.access_token = Certify.generate_token(mac_addr)
+            db.session.commit()
+            return {'status': 1, 'state': 'success', 'message': rt}
+        else:  # Agent不可用
             msg = {'info': 'Access denied'}
             abort.abort_with_msg(403, -1, 'error', **msg)
-
-
-api.add_resource(AgentAuth, '/auth', endpoint='auth')

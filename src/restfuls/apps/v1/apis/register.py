@@ -16,7 +16,6 @@ from flask_restful import reqparse
 
 from src.restfuls.apps.db_model import AgentRegisterLogs
 from src.restfuls.apps.db_model import db
-from src.restfuls.apps.v1 import api
 from src.restfuls.utils import abort
 from src.restfuls.utils.certify import Certify
 
@@ -50,7 +49,7 @@ class AgentRegister(Resource):
         self.get_parser = reqparse.RequestParser()
         self.get_parser.add_argument('client_id', required=True, type=str, help='client_id required')
         self.get_parser.add_argument('client_secret', required=True, type=str, help='client_secret required')
-        self.get_parser.add_argument('page', required=True, type=int, help='page required')
+        self.get_parser.add_argument('page', required=False, type=int, help='page required')
 
         self.post_parser = reqparse.RequestParser()
         self.post_parser.add_argument('client_id', required=True, type=str, help='client_id required')
@@ -161,6 +160,3 @@ class AgentRegister(Resource):
         else:  # Client验证未通过
             msg = {'info': 'Access denied'}
             abort.abort_with_msg(403, flag, 'error', **msg)
-
-
-api.add_resource(AgentRegister, '/register', endpoint='register')

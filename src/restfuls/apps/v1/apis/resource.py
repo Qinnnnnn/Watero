@@ -5,7 +5,6 @@
 File : resource.py
 Author : Zerui Qin
 CreateDate : 2018-12-07 10:00:00
-LastModifiedDate : 2018-12-07 10:00:00
 Note : 设备资源信息
 """
 
@@ -16,7 +15,6 @@ from flask_restful import reqparse
 
 from src.restfuls.apps.db_model import AgentResourceLogs
 from src.restfuls.apps.db_model import db
-from src.restfuls.apps.v1 import api
 from src.restfuls.utils import abort
 from src.restfuls.utils.certify import Certify
 
@@ -85,6 +83,3 @@ class AgentResource(Resource):
         else:
             msg = {'info': 'Access denied'}
             abort.abort_with_msg(403, flag, 'error', **msg)
-
-
-api.add_resource(AgentResource, '/resource', endpoint='resource')
