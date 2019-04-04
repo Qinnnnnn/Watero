@@ -32,12 +32,12 @@ class Certify:
         """
         rt = db.session.query(AgentRegisterLogs).filter_by(mac_addr=digest).first()
         if rt and rt.status == 1 and rt.access_token is not None and access_token == rt.access_token:
-            if Certify.certify_token(digest, rt.access_token):  # access_token中消息摘要通过验证或未被篡改
-                return 1
+            if Certify._certify_token(digest, rt.access_token):  # access_token中消息摘要通过验证或未被篡改
+                return 1  # 验证通过
             else:
-                return -2
+                return -2  # access_token已过期
         else:
-            return -1
+            return -1  # 验证未通过
 
     @staticmethod
     def certify_client(client_id, client_secret):
@@ -49,10 +49,10 @@ class Certify:
         """
         rt = db.session.query(ClientRegisterLogs).filter_by(client_id=client_id).first()
         # TODO 采用 MD5 存储密码
-        if rt and rt.status == 1 and rt.client_secret == client_secret:  # 验证通过
-            return 1
+        if rt and rt.status == 1 and rt.client_secret == client_secret:
+            return 1  # 验证通过
         else:
-            return -1
+            return -1  # 验证未通过
 
     @staticmethod
     def generate_token(msg, expire=0):
@@ -71,7 +71,7 @@ class Certify:
         return b64_token.decode("utf-8")
 
     @staticmethod
-    def certify_token(msg, access_token):
+    def _certify_token(msg, access_token):
         """
         验证access_token合法性
         :param msg: 消息
@@ -85,7 +85,7 @@ class Certify:
         know_ts_str = token_list[0]
         know_expire = token_list[1]
         known_sha1_hex_ts_str = token_list[2]
-        if int(time.time()) > int(know_ts_str) and know_expire > 0:  # access_token已过期
+        if int(time.time()) > int(know_ts_str) and int(know_expire) > 0:  # access_token已过期
             return False
         else:
             calc_sha1_ts_str = hmac.new(key=know_ts_str.encode('utf-8'), msg=msg.encode('utf-8'),

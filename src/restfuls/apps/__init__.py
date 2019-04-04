@@ -11,6 +11,7 @@ Note : 初始化Flask
 
 from flask import Flask
 
+import src.restfuls.apps.v1.route
 from src.restfuls.apps.extension import db
 from src.restfuls.apps.v1 import api_bp
 from src.restfuls.utils.get_config import get_config

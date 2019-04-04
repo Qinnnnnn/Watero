@@ -17,5 +17,5 @@ from src.restfuls.apps.v1.apis.resource import AgentResource
 api.add_resource(AgentRegister, '/register', endpoint='register')
 api.add_resource(AgentAuth, '/auth', endpoint='auth')
 api.add_resource(AgentPush, '/push', endpoint='push')
-api.add_resource(AgentHeartbeat, '/heartbeat', endpoint='heartbeat')
-api.add_resource(AgentResource, '/resource', endpoint='resource')
+api.add_resource(AgentHeartbeat, '/heartbeat/', endpoint='heartbeat')
+api.add_resource(AgentResource, '/resource/<int:device_id>', endpoint='resource')
