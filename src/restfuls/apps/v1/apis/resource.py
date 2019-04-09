@@ -31,16 +31,15 @@ class AgentResource(Resource):
         self.get_parser = reqparse.RequestParser(bundle_errors=True)  # 参数解析失败提示所有错误
         self.get_parser.add_argument('client_id', required=True, type=str, help='client_id required')
         self.get_parser.add_argument('client_secret', required=True, type=str, help='client_secret required')
-        self.get_parser.add_argument('page', required=True, type=str, help='page required')
+        self.get_parser.add_argument('mac_addr', required=True, type=str, help='mac_addr required')
+        self.get_parser.add_argument('page', required=True, type=int, help='page required')
 
         self.post_parser = reqparse.RequestParser(bundle_errors=True)
         self.post_parser.add_argument('mac_addr', required=True, type=str, help='mac_addr required')
         self.post_parser.add_argument('access_token', required=True, type=str, help='access_token required')
         self.post_parser.add_argument('cpu_percent', required=False, type=float)
         self.post_parser.add_argument('cpu_count', required=False, type=int)
-        self.post_parser.add_argument('cpu_freq_current', required=False, type=int)
-        self.post_parser.add_argument('cpu_freq_min', required=False, type=int)
-        self.post_parser.add_argument('cpu_freq_max', required=False, type=int)
+        self.post_parser.add_argument('cpu_freq_current', required=False, type=float)
         self.post_parser.add_argument('total_memory', required=False, type=int)
         self.post_parser.add_argument('available_memory', required=False, type=int)
         self.post_parser.add_argument('sensors_battery_percent', required=False, type=int)
@@ -49,16 +48,30 @@ class AgentResource(Resource):
 
         self._PAGE_SIZE = 20
 
-    common_resp_template = {
+    get_resp_template = {
         'status': fields.Integer,
         'state': fields.String,
         'message': fields.Nested(
-            {'info': fields.String}
+            {'mac_addr': fields.String,
+             'cpu_percent': fields.Float,
+             'cpu_count': fields.Integer,
+             'cpu_freq_current': fields.Float,
+             'total_memory': fields.Integer,
+             'available_memory': fields.Integer,
+             'sensors_battery_percent': fields.Integer,
+             'boot_time': fields.String,
+             'create_time': fields.String}
         )
     }
 
-    @marshal_with(common_resp_template)
-    def get(self, device_id):
+    post_resp_template = {
+        'status': fields.Integer,
+        'state': fields.String,
+        'message': fields.String
+    }
+
+    @marshal_with(get_resp_template)
+    def get(self):
         """
         POST方法
         :return:
@@ -67,18 +80,23 @@ class AgentResource(Resource):
         args = self.get_parser.parse_args()
         client_id = args.get('client_id')
         client_secret = args.get('client_secret')
+        mac_addr = args.get('mac_addr')
         page = args.get('page')
 
         flag = Certify.certify_client(client_id, client_secret)
         if flag == 1:
-            rt = db.session.query(AgentResourceLogs).filter_by(id=device_id).limit(self._PAGE_SIZE).offset(
-                (page - 1) * self._PAGE_SIZE)
+            if mac_addr:
+                rt = db.session.query(AgentResourceLogs).filter_by(mac_addr=mac_addr).limit(self._PAGE_SIZE).offset(
+                    (page - 1) * self._PAGE_SIZE).all()
+            else:
+                rt = db.session.query(AgentResourceLogs).limit(self._PAGE_SIZE).offset(
+                    (page - 1) * self._PAGE_SIZE).all()
             return {'status': '1', 'state': 'success', 'message': rt}
         else:
-            msg = 'info: Access denied'
+            msg = 'Access denied'
             abort.abort_with_msg(403, flag, 'error', msg)
 
-    @marshal_with(common_resp_template)
+    @marshal_with(post_resp_template)
     def post(self):
         """
         POST方法
@@ -94,8 +112,8 @@ class AgentResource(Resource):
         cpu_freq_min = args.get('cpu_freq_min')  # cpu_freq_min参数
         cpu_freq_max = args.get('cpu_freq_max')  # cpu_freq_max参数
         total_memory = args.get('total_memory')  # total_memory参数
-        sensors_battery_percent = args.get('sensors_battery_percent')  # sensors_battery_percent参数
         available_memory = args.get('available_memory')  # available_memory参数
+        sensors_battery_percent = args.get('sensors_battery_percent')  # sensors_battery_percent参数
         boot_time = args.get('boot_time')  # boot_time参数
         create_time = args.get('create_time')  # create_time参数
 
@@ -106,7 +124,7 @@ class AgentResource(Resource):
                                     sensors_battery_percent, boot_time, create_time)
             db.session.add(row)  # 新增设备资源信息记录
             db.session.commit()
-            return {'status': '1', 'state': 'success', 'message': {'info': 'Device resource added'}}
+            return {'status': '1', 'state': 'success', 'message': 'Record added'}
         else:
-            msg = 'info: Access denied'
+            msg = 'Access denied'
             abort.abort_with_msg(403, flag, 'error', msg)

@@ -28,8 +28,7 @@ class AgentAuth(Resource):
         'status': fields.Integer,
         'state': fields.String,
         'message': fields.Nested(
-            {'access_token': fields.String,
-             'device_id': fields.Integer}
+            {'access_token': fields.String}
         )
     }
 
@@ -56,5 +55,5 @@ class AgentAuth(Resource):
             db.session.commit()
             return {'status': 1, 'state': 'success', 'message': rt}
         else:
-            msg = 'info: Access denied'
+            msg = 'Access denied'
             abort.abort_with_msg(403, -1, 'error', msg)

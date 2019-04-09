@@ -38,9 +38,7 @@ class AgentPush(Resource):
     post_resp_template = {
         'status': fields.Integer,
         'state': fields.String,
-        'message': fields.Nested(
-            {'info': fields.String}
-        )
+        'message': fields.String
     }
 
     @marshal_with(post_resp_template)
@@ -57,19 +55,17 @@ class AgentPush(Resource):
         create_time = args.get('create_time')
 
         flag = Certify.certify_client(client_id, client_secret)
-        if flag == 1:  # Client验证通过
-            control_msg = {
+        if flag == 1:
+            boxed_msg = {
                 'mac_addr': mac_addr,
                 'message': message,
                 'create_time': create_time
             }
-            status = ws_rpc_client.run(index=mac_addr, msg=str(control_msg))
+            status = ws_rpc_client.run(index=mac_addr, msg=str(boxed_msg))
             if status:
-                return {'status': '1', 'state': 'success',
-                        'message': {'info': 'Message pushed successfully'}}
+                return {'status': '1', 'state': 'success', 'message': 'Message pushed successfully'}
             else:
-                return {'status': '-1', 'state': 'error',
-                        'message': {'info': 'Message pushed failed'}}
+                return {'status': '-1', 'state': 'error', 'message': 'Message pushed failed'}
         else:  # Client验证未通过
-            msg = 'info: Access denied'
+            msg = 'Access denied'
             abort.abort_with_msg(403, flag, 'error', msg)

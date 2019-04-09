@@ -31,8 +31,8 @@ class AgentHeartbeat(Resource):
         self.get_parser = reqparse.RequestParser(bundle_errors=True)  # 心跳包接口参数解析失败提示所有错误
         self.get_parser.add_argument('client_id', required=True, type=str, help='client_id required')
         self.get_parser.add_argument('client_secret', required=True, type=str, help='client_secret required')
-        self.get_parser.add_argument('page', required=True, type=int, help='page required')
         self.get_parser.add_argument('mac_addr', required=False, type=str)
+        self.get_parser.add_argument('page', required=True, type=int, help='page required')
 
         self.post_parser = reqparse.RequestParser(bundle_errors=True)
         self.post_parser.add_argument('access_token', required=True, type=str, help='token required')
