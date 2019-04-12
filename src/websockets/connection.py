@@ -11,7 +11,7 @@ Note : WebSocket连接被动响应线程
 
 import threading
 
-from src.websockets.core.exception import HeaderFormatException, HeaderFieldMultiException, HeaderFieldException, \
+from src.websockets.extension.exception import HeaderFormatException, HeaderFieldMultiException, HeaderFieldException, \
     SocketCloseAbnormalException
 from src.websockets.protocol.handshake import Handshake
 from src.websockets.protocol.transmission import Transmission

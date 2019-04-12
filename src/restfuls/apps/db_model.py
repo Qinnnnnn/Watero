@@ -77,22 +77,18 @@ class AgentResourceLogs(db.Model):
     cpu_percent = db.Column(db.Float)
     cpu_count = db.Column(db.Integer)
     cpu_freq_current = db.Column(db.Integer)
-    cpu_freq_min = db.Column(db.Integer)
-    cpu_freq_max = db.Column(db.Integer)
     total_memory = db.Column(db.Integer)
     available_memory = db.Column(db.Integer)
     sensors_battery_percent = db.Column(db.Integer)
     boot_time = db.Column(db.DateTime)
     create_time = db.Column(db.DateTime, nullable=False)
 
-    def __init__(self, mac_addr, cpu_percent, cpu_count, cpu_freq_current, cpu_freq_min, cpu_freq_max,
-                 total_memory, available_memory, sensors_battery_percent, boot_time, create_time):
+    def __init__(self, mac_addr, cpu_percent, cpu_count, cpu_freq_current, total_memory, available_memory,
+                 sensors_battery_percent, boot_time, create_time):
         self.mac_addr = mac_addr  # MAC地址
         self.cpu_percent = cpu_percent  # CPU占用率
         self.cpu_count = cpu_count  # CPU非逻辑核心数
         self.cpu_freq_current = cpu_freq_current  # CPU当前频率
-        self.cpu_freq_min = cpu_freq_min  # CPU最小频率
-        self.cpu_freq_max = cpu_freq_max  # CPU最大频率
         self.total_memory = total_memory  # 总内存
         self.available_memory = available_memory  # 可用内存
         self.sensors_battery_percent = sensors_battery_percent  # 电量百分比

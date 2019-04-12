@@ -12,7 +12,7 @@ Note : WebSocket协议握手类
 import base64
 import hashlib
 
-from src.websockets.core.exception import HeaderFormatException, HeaderFieldException, HeaderFieldMultiException
+from src.websockets.extension.exception import HeaderFormatException, HeaderFieldException, HeaderFieldMultiException
 from src.websockets.protocol.transmission import Transmission
 
 

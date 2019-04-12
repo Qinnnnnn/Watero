@@ -6,20 +6,21 @@ File : push_service.py
 Author : Zerui Qin
 CreateDate : 2019-02-01 10:00:00
 LastModifiedDate : 2019-02-01 10:00:00
-Note : WebSocket主动推送服务
+Note : WebSocket Push服务
 """
 
 import threading
 
 import utils.shared_core as shared_core
-from src.websockets.core.exception import ConnMapGetSocketException
+from src.websockets.extension.exception import ConnMapGetSocketException
 from src.websockets.protocol.transmission import Transmission
 from utils.log import log_debug
 
 
 class PushService(threading.Thread):
     """
-    WebSocket主动推送服务类，继承自threading.Thread类实现继承式多线程
+    WebSocket Push服务类，继承自threading.Thread类实现继承式多线程
+    从共享消息队列中阻塞式获取待推送信息推送至对应的Agent
     """
 
     def __init__(self, conn_map):

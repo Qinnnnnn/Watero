@@ -32,8 +32,8 @@ import time
 
 import six
 
-from src.websockets.core.exception import SocketCloseAbnormalException, ConnMapGetSocketException
-from src.websockets.core.frame_field import OPCODE
+from src.websockets.extension.exception import SocketCloseAbnormalException, ConnMapGetSocketException
+from src.websockets.extension.frame_field import OPCODE
 from utils.log import log_debug
 
 

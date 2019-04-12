@@ -20,8 +20,8 @@ from utils.log import log_debug
 
 class WebSocketServer:
     """
-    基于Socket的WebSocket服务器
-    接受TCP连接之后启动子线程处理WebSocket Connection连接
+    基于TCP Socket的WebSocket服务器
+    接受连接之后启动子线程处理Connection连接、Push任务和RPC Server任务
     """
 
     def __init__(self):
