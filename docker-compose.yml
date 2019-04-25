@@ -1,9 +1,11 @@
 version: "3"
 
 services:
-  server:
-    build: Dockerfile
+  services:
+    build: .
+    image: watero-center:v1.0
     container_name: watero_center
     ports:
       - "5000:5000"
-      - "5001:5001"
+    volumes:
+      - /home/qinzerui/Projects/Watero_Center:/home/qinzerui/Projects/Watero_Center
