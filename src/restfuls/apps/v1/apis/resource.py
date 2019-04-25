@@ -31,7 +31,7 @@ class AgentResource(Resource):
         self.get_parser = reqparse.RequestParser(bundle_errors=True)  # 参数解析失败提示所有错误
         self.get_parser.add_argument('client_id', required=True, type=str, help='client_id required')
         self.get_parser.add_argument('client_secret', required=True, type=str, help='client_secret required')
-        self.get_parser.add_argument('mac_addr', required=True, type=str, help='mac_addr required')
+        self.get_parser.add_argument('mac_addr', required=False, type=str)
         self.get_parser.add_argument('page', required=True, type=int, help='page required')
 
         self.post_parser = reqparse.RequestParser(bundle_errors=True)
@@ -86,10 +86,12 @@ class AgentResource(Resource):
         flag = Certify.certify_client(client_id, client_secret)
         if flag == 1:
             if mac_addr:
-                rt = db.session.query(AgentResourceLogs).filter_by(mac_addr=mac_addr).limit(self._PAGE_SIZE).offset(
+                rt = db.session.query(AgentResourceLogs).filter_by(mac_addr=mac_addr).order_by(
+                    AgentResourceLogs.create_time.desc()).limit(self._PAGE_SIZE).offset(
                     (page - 1) * self._PAGE_SIZE).all()
             else:
-                rt = db.session.query(AgentResourceLogs).limit(self._PAGE_SIZE).offset(
+                rt = db.session.query(AgentResourceLogs).order_by(
+                    AgentResourceLogs.create_time.desc()).limit(self._PAGE_SIZE).offset(
                     (page - 1) * self._PAGE_SIZE).all()
             return {'status': '1', 'state': 'success', 'message': rt}
         else:
@@ -109,8 +111,6 @@ class AgentResource(Resource):
         cpu_percent = args.get('cpu_percent')  # cpu_percent参数
         cpu_count = args.get('cpu_count')  # cpu_count参数
         cpu_freq_current = args.get('cpu_freq_current')  # cpu_freq_current参数
-        cpu_freq_min = args.get('cpu_freq_min')  # cpu_freq_min参数
-        cpu_freq_max = args.get('cpu_freq_max')  # cpu_freq_max参数
         total_memory = args.get('total_memory')  # total_memory参数
         available_memory = args.get('available_memory')  # available_memory参数
         sensors_battery_percent = args.get('sensors_battery_percent')  # sensors_battery_percent参数
@@ -119,8 +119,7 @@ class AgentResource(Resource):
 
         flag = Certify.certify_agent(mac_addr, access_token)
         if flag == 1:
-            row = AgentResourceLogs(mac_addr, cpu_percent, cpu_count, cpu_freq_current,
-                                    cpu_freq_min, cpu_freq_max, total_memory, available_memory,
+            row = AgentResourceLogs(mac_addr, cpu_percent, cpu_count, cpu_freq_current, total_memory, available_memory,
                                     sensors_battery_percent, boot_time, create_time)
             db.session.add(row)  # 新增设备资源信息记录
             db.session.commit()

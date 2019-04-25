@@ -13,6 +13,6 @@ from src.restfuls.apps import create_app
 
 if __name__ == '__main__':
     _HOST = '0.0.0.0'
-    _PORT = 5001
+    _PORT = 5000
     flask_server = create_app()  # 实例化HTTP服务
     flask_server.run(host=_HOST, port=_PORT, debug=False)

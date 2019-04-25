@@ -6,7 +6,7 @@ File : __init__.py
 Author : Zerui Qin
 CreateDate : 2018-11-18 10:00:00
 LastModifiedDate : 2018-11-18 10:00:00
-Note : API V1.0蓝图，路由注册表
+Note : API V1.0蓝图
 """
 
 from flask import Blueprint

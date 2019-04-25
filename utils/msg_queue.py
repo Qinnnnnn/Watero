@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-File : shared_core.py
+File : msg_queue.py
 Author : Zerui Qin
 CreateDate : 2019-02-01 10:00:00
 LastModifiedDate : 2019-02-01 10:00:00
@@ -21,4 +21,4 @@ class PopcornModel:
         self.msg = msg
 
 
-shared_queue = queue.Queue()  # HTTP服务到WebSocket服务共享队列
+mq = queue.Queue()

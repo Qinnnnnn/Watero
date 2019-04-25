@@ -11,35 +11,46 @@ Note : 初始化Flask
 
 from flask import Flask
 
-import src.restfuls.apps.v1.route
+import src.restfuls.apps.v1.route as url_route
 from src.restfuls.apps.extension import db
+from src.restfuls.apps.v1 import api
 from src.restfuls.apps.v1 import api_bp
 from src.restfuls.utils.get_config import get_config
 
 
-def register_extension(app):
+def register_extension(p_app):
     """
     注册插件
-    :param app: Flask实例
+    :param p_app: Flask实例
     :return:
     """
-    with app.app_context():
-        db.init_app(app)
+    with p_app.app_context():
+        db.init_app(p_app)
         db.create_all()
 
 
-def register_blueprints(app):
+def register_blueprints(p_app):
     """
     注册蓝图
-    :param app: Flask实例
+    :param p_app: Flask实例
     :return:
     """
-    app.register_blueprint(api_bp)
+    p_app.register_blueprint(api_bp)
 
 
-def create_app():
+def register_route(p_api):
     """
-    实例化Flask
+    注册路由
+    :param p_api: API实例
+    :return:
+    """
+    url_route.register_url(p_api)  # 注册路由
+
+
+def config_app(p_app):
+    """
+    配置app参数
+    :param p_app: Flask实例
     :return:
     """
     config = get_config('remote_mysql')
@@ -48,10 +59,20 @@ def create_app():
     port = config['port']
     user = config['user']
     password = config['password']
+
+    p_app.config['SQLALCHEMY_DATABASE_URI'] = f'{db_type}+pymysql://{user}:{password}@{host}:{port}/watero'
+    p_app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # 不追踪数据库变化
+    p_app.config['SQLALCHEMY_ECHO'] = False  # 不打印原始SQL语句
+
+
+def create_app():
+    """
+    实例化Flask
+    :return:
+    """
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'{db_type}+pymysql://{user}:{password}@{host}:{port}/watero'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # 不追踪数据库变化
-    app.config['SQLALCHEMY_ECHO'] = False  # 不打印原始SQL语句
+    config_app(app)  # 配置app参数
     register_extension(app)  # 注册插件
     register_blueprints(app)  # 注册蓝图
+    register_route(api)  # 注册路由
     return app

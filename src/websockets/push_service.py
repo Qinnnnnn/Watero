@@ -11,7 +11,7 @@ Note : WebSocket Push服务
 
 import threading
 
-import utils.shared_core as shared_core
+import utils.msg_queue as msg_queue
 from src.websockets.extension.exception import ConnMapGetSocketException
 from src.websockets.protocol.transmission import Transmission
 from utils.log import log_debug
@@ -37,7 +37,7 @@ class PushService(threading.Thread):
         :return:
         """
         while True:
-            popcorn = shared_core.shared_queue.get()  # 阻塞等待队列数据
+            popcorn = msg_queue.mq.get()  # 阻塞等待队列数据
             index = popcorn.index
             msg = popcorn.msg
             try:

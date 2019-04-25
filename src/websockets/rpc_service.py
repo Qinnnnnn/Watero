@@ -15,7 +15,7 @@ from concurrent import futures
 
 import grpc
 
-import utils.shared_core as shared_core
+import utils.msg_queue as msg_queue
 from src.rpcs.protos import data_pipe_pb2
 from src.rpcs.protos import data_pipe_pb2_grpc
 
@@ -38,8 +38,8 @@ class DataFlow(data_pipe_pb2_grpc.DataFlowServicer):
         """
         index = request.index
         msg = request.msg
-        popcorn = shared_core.PopcornModel(index, msg)
-        shared_core.shared_queue.put(popcorn)
+        popcorn = msg_queue.PopcornModel(index, msg)
+        msg_queue.mq.put(popcorn)
         return data_pipe_pb2.TransmitReply(status=1)
 
 
