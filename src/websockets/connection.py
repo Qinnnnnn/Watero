@@ -59,13 +59,18 @@ class Connection(threading.Thread):
         ws_handshake = Handshake(self.index, self.conn_map)
         ws_transmission = Transmission(self.conn_map)
         ws_transmission.init_socket(index=self.index)
+
         while True:  # 循环接收WebSocket Client消息
             if self.is_handshake is False:  # WebSocket未建立连接
-                self.recv_buffer = self.conn.recv(1024)  # 接收字节序列
+                self.recv_buffer += self.conn.recv(1024)  # 接收字节序列，可能存在一次性不能接受完header的情况
                 self.recv_buffer_str = self.recv_buffer.decode('utf-8')  # 字节序列解码
                 try:
-                    ws_handshake.handshake_request_check(self.recv_buffer_str)  # 检查WebSocket请求握手头部
-                except (HeaderFormatException, HeaderFieldMultiException, HeaderFieldException) as exp:
+                    ws_handshake.handshake_check(self.recv_buffer_str)  # 检查WebSocket握手请求
+                except HeaderFormatException as exp:
+                    log_debug.logger.error(f'WebSocket {self.index}: {exp.msg}')
+                    continue  # 未检查到\r\n\r\n则跳过本次循环继续接收
+                except (HeaderFieldMultiException, HeaderFieldException) as exp:
+                    ws_transmission.remove_conn()  # WebSocket连接建立失败，删除连接映射表中的当前socket句柄
                     log_debug.logger.error(f'WebSocket {self.index}: {exp.msg}')
 
                 ws_handshake.handshake_response()  # 发送WebSocket握手响应

@@ -28,7 +28,7 @@ class WebSocketServer:
         """
         初始化
         """
-        self.index = 1  # WebSocket连接索引
+        self.index = 0  # WebSocket连接索引
         self.socket = None  # Socket句柄
         self.conn_map = dict()  # WebSocket连接映射表
 

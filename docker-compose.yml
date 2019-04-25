@@ -7,5 +7,6 @@ services:
     container_name: watero_center
     ports:
       - "5000:5000"
+      - "5001:5001"
     volumes:
       - /home/qinzerui/Projects/Watero_Center:/home/qinzerui/Projects/Watero_Center
