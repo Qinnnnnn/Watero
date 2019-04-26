@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-File : frame_field.py
+File : code_mapping.py
 Author : Zerui Qin
 CreateDate : 2019-01-12 30:00:00
 LastModifiedDate : 2019-01-30 10:00:00
@@ -33,3 +33,24 @@ class OPCODE(Enum):
     RESERVED_CONTROL_3 = 13
     RESERVED_CONTROL_4 = 14
     RESERVED_CONTROL_5 = 15
+
+
+@unique
+class CLOSE_CODE(Enum):
+    """
+    CLOSE控制帧状态码映射值
+    """
+    CLOSE_NORMAL = 1000
+    CLOSE_GOING_AWAY = 1001
+    CLOSE_PROTOCOL_ERROR = 1002
+    CLOSE_UNSUPPORTED = 1003
+    CLOSE_NO_STATUS = 1005
+    CLOSE_ABNORMAL = 1006
+    Unsupported_Data = 1007
+    Policy_Violation = 1008
+    CLOSE_TOO_LARGE = 1009
+    Missing_Extension = 1010
+    Internal_Error = 1011
+    Service_Restart = 1012
+    Try_Again_Later = 1013
+    TLS_Handshake = 1015

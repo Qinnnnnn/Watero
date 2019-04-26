@@ -76,7 +76,7 @@ class Connection(threading.Thread):
                 ws_handshake.handshake_response()  # 发送WebSocket握手响应
                 log_debug.logger.info(f'WebSocket {self.index}: 握手成功')
 
-                self.is_online = ws_transmission.send_heartbeat()  # 心跳测试
+                self.is_online = ws_transmission.heartbeat()  # 心跳测试
                 if self.is_online is True:
                     self.is_handshake = True  # WebSocket 连接成功建立，修改握手标志
                     log_debug.logger.info(f'WebSocket {self.index}: 建立连接')
@@ -85,13 +85,16 @@ class Connection(threading.Thread):
                 self.recv_buffer_str = ''
             else:  # WebSocket已建立连接，响应控制帧
                 try:
-                    frame_tuple = ws_transmission.recv()
-                    self.recv_buffer = frame_tuple[-1]
-                    respond_flag = ws_transmission.respond_control_frame(frame_tuple)  # 响应控制帧
-                    if respond_flag:
-                        log_debug.logger.info(f'WebSocket {self.index}: opcode {frame_tuple[4]} 控制帧已响应')
+                    field_list = ws_transmission.recv()
+                    if field_list:
+                        self.recv_buffer = field_list[-1]
+                        flag = ws_transmission.passive_respond(field_list)  # 响应控制帧
+                        if flag:
+                            log_debug.logger.info(f'WebSocket {self.index}: opcode {field_list[4]} 控制帧已响应')
+                        else:
+                            log_debug.logger.error(f'WebSocket {self.index}: opcode {field_list[4]} 数据帧未响应')
                     else:
-                        log_debug.logger.error(f'WebSocket {self.index}: opcode {frame_tuple[4]} 数据帧未响应')
+                        log_debug.logger.info(f'WebSocket {self.index} 数据帧解析失败')
                 except SocketCloseAbnormalException as exp:  # WebSocket 异常关闭
                     ws_transmission.remove_conn()  # 从连接映射表中删除句柄
                     log_debug.logger.error(f'WebSocket {self.index}: {exp.msg}')

@@ -38,7 +38,7 @@ class Handshake:
 
         # noinspection PyMethodMayBeStatic
 
-    def handshake_request_check(self, msg):
+    def handshake_check(self, msg):
         """
         检查WebSocket握手请求
         :param msg: str - WebSocket握手请求
