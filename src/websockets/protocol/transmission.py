@@ -32,7 +32,7 @@ import time
 
 import six
 
-from src.websockets.extension.code_mapping import OPCODE, CLOSE_CODE
+from src.websockets.extension.mapping import OPCODE, CLOSE_CODE
 from src.websockets.extension.exception import SocketCloseAbnormalException, ConnMapGetSocketException
 from utils.log import log_debug
 

@@ -15,7 +15,7 @@ import src.restfuls.apps.v1.route as url_route
 from src.restfuls.apps.extension import db
 from src.restfuls.apps.v1 import api
 from src.restfuls.apps.v1 import api_bp
-from src.restfuls.utils.get_config import get_config
+from utils.get_config import get_config
 
 
 def register_extension(p_app):
@@ -53,7 +53,7 @@ def config_app(p_app):
     :param p_app: Flask实例
     :return:
     """
-    config = get_config('remote_mysql')
+    config = get_config('aliyun_mysql')
     db_type = config['db_type']
     host = config['host']
     port = config['port']

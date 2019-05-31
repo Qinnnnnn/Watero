@@ -17,4 +17,4 @@ def get_config(item):
     work_dir = os.getcwd()
     path = os.path.join(work_dir, 'config', 'identify.yaml')
     with open(path, 'rb') as f:
-        return yaml.load(f)[item]
+        return yaml.full_load(f)[item]

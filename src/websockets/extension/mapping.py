@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-File : code_mapping.py
+File : mapping.py
 Author : Zerui Qin
 CreateDate : 2019-01-12 30:00:00
 LastModifiedDate : 2019-01-30 10:00:00
